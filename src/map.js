@@ -1,10 +1,10 @@
 import { COLORS } from "./constants.js";
+import { style } from "./style.js";
 
 export function createMap(containerId) {
   const map = new maplibregl.Map({
     container: containerId,
-    style:
-      "https://api.protomaps.com/styles/v5/grayscale/en.json?key=e719bed843250125",
+    style,
     center: [-122.335, 47.608],
     zoom: 11,
     minZoom: 9,
