@@ -85,6 +85,7 @@ export const SIZE_ALIASES = [
   "DIAMETER",
   "TREE_DIAM",
   "TREE_DBH",
+  "TREEDIAMETER_IN",
 ];
 
 export const COND_ALIASES = [
