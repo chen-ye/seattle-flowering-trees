@@ -158,6 +158,10 @@ export const FLOWER_COLORS = {
   "PRUNUS JAPONICA": "#f4c8dc",
   "PRUNUS GLANDULOSA": "#f4c8dc",
   "PRUNUS JUDDII": "#f0a0c0",
+  "PRUNUS ILICIFOLIA": "#f8f8f8",
+  "PRUNUS PUGETENSIS": "#f8f0f4",
+  "PRUNUS BLIREANA": "#e8628c",
+  "PRUNUS YEDEOENSIS": "#f4c8dc",
 };
 
 export const SPECIES_LABELS = {
@@ -209,6 +213,14 @@ export const SPECIES_LABELS = {
   "PRUNUS JAPONICA": "Korean Cherry",
   "PRUNUS GLANDULOSA": "Flowering Almond",
   "PRUNUS JUDDII": "Judd Cherry",
+  "PRUNUS AMERICANA": "American Plum",
+  "PRUNUS CAROLINIANA": "Carolina Laurelcherry",
+  "PRUNUS ILICIFOLIA": "Hollyleaf Cherry",
+  "PRUNUS LUSITANICA": "Portugal Laurel",
+  "PRUNUS SALICINA": "Japanese Plum",
+  "PRUNUS BLIREANA": "Blireiana Plum",
+  "PRUNUS PUGETENSIS": "Puget Sound Cherry",
+  "PRUNUS YEDEOENSIS": "Yoshino Cherry",
 };
 
 export const COLOR_LABEL = {};
@@ -231,6 +243,9 @@ export function getFlowerColor(scientific) {
     if (upper.startsWith(prefix) || upper.includes(prefix.replace("PRUNUS ", ""))) {
       return FLOWER_COLORS[prefix];
     }
+  }
+  if (upper.startsWith("PRUNUS") && upper !== "PRUNUS" && upper !== "PRUNUS SP") {
+    console.warn(`[getFlowerColor] Unmatched Prunus variety: ${scientific}`);
   }
   return null;
 }
@@ -277,11 +292,18 @@ export function isFloweringCherry(common, scientific) {
     "PRUNUS DREAM CATCHER",
     "PRUNUS SHOGETSU",
     "PRUNUS JUDDII",
+    "PRUNUS YEDEOENSIS",
+    "PRUNUS PUGETENSIS",
   ];
   let upperSci = sci.replace(/\s+/g, " ").replace(/[`'"]/g, "");
   upperSci = upperSci.replace(/^PRUNUS X /, "PRUNUS ");
   upperSci = upperSci.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
-  return CHERRY_PREFIXES.some((prefix) => upperSci.startsWith(prefix) || upperSci.includes(prefix.replace("PRUNUS ", "")));
+  const matched = CHERRY_PREFIXES.some((prefix) => upperSci.startsWith(prefix) || upperSci.includes(prefix.replace("PRUNUS ", "")));
+  if (!matched && upperSci.startsWith("PRUNUS") && upperSci !== "PRUNUS" && upperSci !== "PRUNUS SP") {
+    // Some are genuinely not flowering cherries (e.g. laurels, plums), but log anyway to catch misses
+    console.warn(`[isFloweringCherry] Prunus variety not in CHERRY_PREFIXES (might be correct if not a cherry): ${scientific}`);
+  }
+  return matched;
 }
 
 
@@ -297,6 +319,9 @@ export const BLOOMING_PERIODS = {
   "PRUNUS DULCIS": "early",
   "PRUNUS ARMENIACA": "early",
   "PRUNUS TOMENTOSA": "early",
+  "PRUNUS CAROLINIANA": "early",
+  "PRUNUS SALICINA": "early",
+  "PRUNUS BLIREANA": "early",
 
   "PRUNUS YEDOENSIS": "mid",
   "PRUNUS X YEDOENSIS": "mid",
@@ -321,6 +346,11 @@ export const BLOOMING_PERIODS = {
   "PRUNUS JUDDII": "mid",
   "PRUNUS NEWPORT": "mid",
   "PRUNUS BENI-TAMANISHIKI": "mid",
+  "PRUNUS AMERICANA": "mid",
+  "PRUNUS SERRULA": "mid",
+  "PRUNUS DOMESTICA": "mid",
+  "PRUNUS PUGETENSIS": "mid",
+  "PRUNUS YEDEOENSIS": "mid",
 
   "PRUNUS SERRULATA": "late",
   "PRUNUS KWANZAN": "late",
@@ -332,7 +362,9 @@ export const BLOOMING_PERIODS = {
   "PRUNUS VIRGINIANA": "late",
   "PRUNUS PADUS": "late",
   "PRUNUS EMARGINATA": "late",
-  "PRUNUS LAUROCERASUS": "late"
+  "PRUNUS LAUROCERASUS": "late",
+  "PRUNUS ILICIFOLIA": "late",
+  "PRUNUS LUSITANICA": "late"
 };
 
 export const BLOOMING_KEYS = Object.keys(BLOOMING_PERIODS).sort(
@@ -349,6 +381,9 @@ export function getBloomingPeriod(scientific) {
     if (upper.startsWith(prefix) || upper.includes(prefix.replace("PRUNUS ", ""))) {
       return BLOOMING_PERIODS[prefix];
     }
+  }
+  if (upper.startsWith("PRUNUS") && upper !== "PRUNUS" && upper !== "PRUNUS SP") {
+    console.warn(`[getBloomingPeriod] Unmatched Prunus variety: ${scientific}`);
   }
   return null;
 }
