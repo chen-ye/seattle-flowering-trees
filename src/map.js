@@ -1,9 +1,6 @@
 import { COLORS } from "./constants.js";
 import { style } from "./style.js";
 
-const protocol = new pmtiles.Protocol();
-maplibregl.addProtocol("pmtiles", protocol.tile);
-
 export function createMap(containerId) {
   const map = new maplibregl.Map({
     container: containerId,
