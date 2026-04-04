@@ -14,10 +14,7 @@ export const style = {
   sources: {
     [SOURCE]: {
       type: "vector",
-      tiles: [
-        `https://api.protomaps.com/tiles/v4/{z}/{x}/{y}.mvt?key=${PROTOMAPS_KEY}`,
-      ],
-      maxzoom: 15,
+      url: `https://api.protomaps.com/tiles/v4.json?key=${PROTOMAPS_KEY}`,
       attribution:
         '<a href="https://protomaps.com">Protomaps</a> | <a href="https://openstreetmap.org">OSM</a>',
     },
