@@ -22,8 +22,6 @@ function matchField(names, aliases) {
 }
 
 export async function discoverFields(source) {
-  if ("sciField" in source) return;
-
   let meta;
   try {
     const res = await fetch(`${source.base}?f=json`);
@@ -54,10 +52,10 @@ export async function discoverFields(source) {
   }
 
   const fields = (meta.fields || []).map((f) => f.name);
-  source.sciField = matchField(fields, SCI_ALIASES) || null;
-  source.commonField = matchField(fields, COMMON_ALIASES) || null;
-  source.condField = matchField(fields, COND_ALIASES) || null;
-  source.sizeField = matchField(fields, SIZE_ALIASES) || null;
+  source.sciField = source.sciField ?? matchField(fields, SCI_ALIASES) ?? null;
+  source.commonField = source.commonField ?? matchField(fields, COMMON_ALIASES) ?? null;
+  source.condField = source.condField ?? matchField(fields, COND_ALIASES) ?? null;
+  source.sizeField = source.sizeField ?? matchField(fields, SIZE_ALIASES) ?? null;
 
   if (fields.some((n) => n.toUpperCase() === "CURRENT_STATUS")) {
     source.statusClause = "CURRENT_STATUS = 'INSVC'";

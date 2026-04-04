@@ -63,6 +63,7 @@ export const SIZE_ALIASES = [
   "DBH_WL",
   "DIAMETERATBREASTHEIGHT",
   "DBH",
+  "DSH",
   "DIAMETER",
   "TREE_DIAM",
   "TREE_DBH",
