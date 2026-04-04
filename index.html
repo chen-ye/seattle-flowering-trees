@@ -209,12 +209,10 @@ const SOURCES = [
     id:    'sdot',
     label: 'SDOT',
     color: '#e8436a',
-    base:  'https://gisdata.seattle.gov/server/rest/services/SDOT/SDOT_Assets/MapServer/6',
-    // Fields are known for this service
-    sciField:    'SCIENTIFIC_NAME',
-    commonField: 'COMMON_NAME',
-    condField:   'CONDITION',
-    statusClause: "CURRENT_STATUS = 'INSVC'",
+    // ArcGIS Online endpoint — guaranteed CORS support from any browser origin.
+    // The enterprise gisdata.seattle.gov mirror has uncertain CORS policy.
+    base:  'https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SDOT_Trees_CDL/FeatureServer/0',
+    // Fields discovered dynamically via discoverFields(); aliases cover BOTANICAL_NAME / COMMON_NAME.
   },
   {
     id:    'uw',
@@ -273,7 +271,17 @@ async function discoverFields(source) {
   try {
     const res = await fetch(`${source.base}?f=json`);
     meta = await res.json();
-  } catch {
+  } catch (e) {
+    console.warn(`[${source.label}] discoverFields failed (network/CORS):`, e.message);
+    source.sciField = null;
+    source.commonField = null;
+    source.condField = null;
+    source.statusClause = null;
+    return;
+  }
+
+  if (meta.error) {
+    console.warn(`[${source.label}] discoverFields ArcGIS error:`, JSON.stringify(meta.error));
     source.sciField = null;
     source.commonField = null;
     source.condField = null;
@@ -291,6 +299,8 @@ async function discoverFields(source) {
   } else {
     source.statusClause = null;
   }
+
+  console.log(`[${source.label}] fields — sci: ${source.sciField}, common: ${source.commonField}, cond: ${source.condField}`);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -321,7 +331,9 @@ async function fetchSourceData(source) {
   const countRes = await fetch(`${source.base}/query?` + new URLSearchParams({
     where, returnCountOnly: 'true', f: 'json',
   }));
-  const { count = 0 } = await countRes.json();
+  const countJson = await countRes.json();
+  if (countJson.error) throw new Error(`ArcGIS error: ${JSON.stringify(countJson.error)}`);
+  const count = countJson.count ?? 0;
   if (count === 0) return [];
 
   // Fetch all pages in parallel
@@ -335,7 +347,10 @@ async function fetchSourceData(source) {
       resultOffset: offset,
       resultRecordCount: PAGE_SIZE,
       returnGeometry: 'true',
-    })).then(r => r.json()).then(d => d.features ?? [])
+    })).then(r => r.json()).then(d => {
+      if (d.error) throw new Error(`ArcGIS page error: ${JSON.stringify(d.error)}`);
+      return d.features ?? [];
+    })
   ));
 
   // Normalize to a common property schema
