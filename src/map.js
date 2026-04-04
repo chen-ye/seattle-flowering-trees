@@ -161,7 +161,7 @@ export function addLayersForSource(map, sourceId, visible) {
     const sizeHtml = p._size
       ? `<div class="popup-size">Trunk Diameter: ${p._size}"</div>`
       : "";
-    const srcHtml = `<div class="popup-source" style="background:${p._color}">${p._source}</div>`;
+    const srcHtml = `<a href="${p._base}" target="_blank" class="popup-source" style="background:${p._color}; text-decoration:none; color:white;">${p._source}</a>`;
 
     new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
       .setLngLat(coords)
@@ -241,7 +241,7 @@ export function addRawLayersForSource(map, sourceId, visible) {
     const sizeHtml = p._size
       ? `<div class="popup-size">Trunk Diameter: ${p._size}"</div>`
       : "";
-    const srcHtml = `<div class="popup-source" style="background:${p._color}">${p._source}</div>`;
+    const srcHtml = `<a href="${p._base}" target="_blank" class="popup-source" style="background:${p._color}; text-decoration:none; color:white;">${p._source}</a>`;
 
     new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
       .setLngLat(coords)
