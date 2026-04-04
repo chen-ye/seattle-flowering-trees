@@ -103,15 +103,17 @@ export function addLayersForSource(map, sourceId, visible) {
     paint: {
       "circle-color": ["coalesce", ["get", "_flower_color"], COLORS.single],
       "circle-radius": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        12,
-        3.5,
-        16,
-        6,
-        19,
-        9,
+        "case",
+        ["!=", ["get", "_size"], null],
+        [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          12, ["max", 2, ["/", ["get", "_size"], 10]],
+          16, ["max", 4, ["/", ["get", "_size"], 5]],
+          19, ["max", 7, ["/", ["get", "_size"], 2.5]]
+        ],
+        ["interpolate", ["linear"], ["zoom"], 12, 3.5, 16, 6, 19, 9]
       ],
       "circle-opacity": 0.85,
       "circle-stroke-width": 1,
@@ -146,11 +148,14 @@ export function addLayersForSource(map, sourceId, visible) {
     const condHtml = p._condition
       ? `<div class="popup-cond">Condition: ${p._condition}</div>`
       : "";
+    const sizeHtml = p._size
+      ? `<div class="popup-size">Trunk Diameter: ${p._size}"</div>`
+      : "";
     const srcHtml = `<div class="popup-source" style="background:${p._color}">${p._source}</div>`;
 
     new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
       .setLngLat(coords)
-      .setHTML(nameHtml + sciHtml + condHtml + srcHtml)
+      .setHTML(nameHtml + sciHtml + condHtml + sizeHtml + srcHtml)
       .addTo(map);
   });
 
@@ -181,15 +186,17 @@ export function addRawLayersForSource(map, sourceId, visible) {
     paint: {
       "circle-color": ["coalesce", ["get", "_flower_color"], COLORS.single],
       "circle-radius": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        10,
-        2.5,
-        14,
-        4.5,
-        19,
-        8,
+        "case",
+        ["!=", ["get", "_size"], null],
+        [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, ["max", 1.5, ["/", ["get", "_size"], 15]],
+          14, ["max", 3, ["/", ["get", "_size"], 8]],
+          19, ["max", 6, ["/", ["get", "_size"], 3]]
+        ],
+        ["interpolate", ["linear"], ["zoom"], 10, 2.5, 14, 4.5, 19, 8]
       ],
       "circle-opacity": 0.8,
       "circle-stroke-width": 0.8,
@@ -211,10 +218,14 @@ export function addRawLayersForSource(map, sourceId, visible) {
     const condHtml = p._condition
       ? `<div class="popup-cond">Condition: ${p._condition}</div>`
       : "";
+    const sizeHtml = p._size
+      ? `<div class="popup-size">Trunk Diameter: ${p._size}"</div>`
+      : "";
     const srcHtml = `<div class="popup-source" style="background:${p._color}">${p._source}</div>`;
+
     new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
       .setLngLat(coords)
-      .setHTML(nameHtml + sciHtml + condHtml + srcHtml)
+      .setHTML(nameHtml + sciHtml + condHtml + sizeHtml + srcHtml)
       .addTo(map);
   });
   map.on("mouseenter", layerId, () => {

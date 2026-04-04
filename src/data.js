@@ -2,6 +2,7 @@ import {
   SCI_ALIASES,
   COMMON_ALIASES,
   COND_ALIASES,
+  SIZE_ALIASES,
   isFloweringCherry,
   getFlowerColor,
   getBloomingPeriod,
@@ -35,6 +36,7 @@ export async function discoverFields(source) {
     source.sciField = null;
     source.commonField = null;
     source.condField = null;
+    source.sizeField = null;
     source.statusClause = null;
     return;
   }
@@ -55,6 +57,7 @@ export async function discoverFields(source) {
   source.sciField = matchField(fields, SCI_ALIASES) || null;
   source.commonField = matchField(fields, COMMON_ALIASES) || null;
   source.condField = matchField(fields, COND_ALIASES) || null;
+  source.sizeField = matchField(fields, SIZE_ALIASES) || null;
 
   if (fields.some((n) => n.toUpperCase() === "CURRENT_STATUS")) {
     source.statusClause = "CURRENT_STATUS = 'INSVC'";
@@ -63,7 +66,7 @@ export async function discoverFields(source) {
   }
 
   console.log(
-    `[${source.label}] fields — sci: ${source.sciField}, common: ${source.commonField}, cond: ${source.condField}`,
+    `[${source.label}] fields — sci: ${source.sciField}, common: ${source.commonField}, cond: ${source.condField}, size: ${source.sizeField}`,
   );
 }
 
@@ -82,7 +85,7 @@ export async function fetchSourceData(source) {
   const where = whereParts.join(" AND ");
 
   const outFields =
-    [source.sciField, source.commonField, source.condField]
+    [source.sciField, source.commonField, source.condField, source.sizeField]
       .filter(Boolean)
       .join(",") || "*";
 
@@ -132,6 +135,9 @@ export async function fetchSourceData(source) {
     const sci = ((source.sciField && p[source.sciField]) || "").trim();
     const com = ((source.commonField && p[source.commonField]) || "").trim();
     const cond = ((source.condField && p[source.condField]) || "").trim();
+    const sizeVal = source.sizeField ? p[source.sizeField] : null;
+    const size = typeof sizeVal === "number" ? sizeVal : parseFloat(sizeVal);
+
 
     return {
       ...f,
@@ -139,6 +145,7 @@ export async function fetchSourceData(source) {
         _scientific: sci,
         _common: com || sci || "Unknown",
         _condition: cond,
+        _size: isNaN(size) ? null : size,
         _source: source.label,
         _color: source.color,
         _is_cherry: isFloweringCherry(com, sci),
