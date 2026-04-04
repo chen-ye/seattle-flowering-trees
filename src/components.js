@@ -39,9 +39,7 @@ class AppUI extends LitElement {
 
       #panel {
         background: rgba(255, 255, 255, 0.96);
-        border-radius: 12px;
         padding: 12px 18px;
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.14);
         display: flex;
         align-items: center;
         flex-wrap: wrap;
@@ -49,42 +47,22 @@ class AppUI extends LitElement {
         gap: 12px;
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
-        width: 90vw;
-        max-width: 600px;
       }
 
-      #sources {
+      #legend {
+        background: rgba(255, 255, 255, 0.93);
+        padding: 10px 14px;
+        font-size: 12px;
+        color: #555;
+        line-height: 1.8;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        max-height: 40vh;
+        overflow-y: auto;
+        max-width: 150px;
         display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 95vw;
-        max-width: 600px;
-      }
-      @media (min-width: 480px) {
-        #sources {
-          top: 62px;
-          width: auto;
-          max-width: 90vw;
-        }
-      }
-
-      .source-badge {
-        padding: 3px 9px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 500;
-        color: white;
-        opacity: 0.5;
-        transition: opacity 0.3s;
-        white-space: nowrap;
-      }
-      .source-badge.loaded {
-        opacity: 1;
-      }
-      .source-badge.error {
-        opacity: 0.4;
-        text-decoration: line-through;
+        flex-direction: column;
+        gap: 4px;
       }
 
     }
@@ -169,36 +147,36 @@ class AppUI extends LitElement {
       opacity: 0;
     }
 
-    #legend {
-      position: absolute;
-      bottom: 80px;
-      right: 12px;
-      background: rgba(255, 255, 255, 0.93);
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      color: #555;
-      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.12);
-      line-height: 1.8;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      max-height: 40vh;
-      overflow-y: auto;
-      max-width: 150px;
-    }
-    @media (min-width: 480px) {
-      #legend {
-        bottom: 36px;
-        max-height: 60vh;
-        max-width: none;
-      }
-    }
-
     .legend-row {
       display: flex;
       align-items: center;
       gap: 8px;
+      .source-badge.loaded {
+        opacity: 1;
+      }
+      .source-badge.error {
+        opacity: 0.4;
+        text-decoration: line-through;
+      }
     }
+
+    .sources {
+      flex-wrap: wrap;
+
+      .legend-row {
+        color: #0000003A;
+
+        &.loaded {
+          color: unset;
+        }
+
+        &.error {
+          text-decoration: line-through;
+        }
+      }
+    }
+
+
     .legend-dot {
       width: 10px;
       height: 10px;
@@ -221,7 +199,6 @@ class AppUI extends LitElement {
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: #999;
-      margin: 6px 0 2px;
     }
   `;
 
@@ -286,11 +263,11 @@ class AppUI extends LitElement {
     }
 
     const species = [...counts.values()]
-      .sort((a, b) => a.isUnk - b.isUnk || b.count - a.count)
-      .slice(0, 10);
+      .sort((a, b) => a.isUnk - b.isUnk || b.count - a.count);
 
     return html`
       <div id="legend">
+
         <div class="legend-section-label">Cluster size</div>
         <div class="legend-row">
           <div
@@ -326,6 +303,21 @@ class AppUI extends LitElement {
               )}
             `
           : ""}
+
+        <div class="legend-section-label">Datasources</div>
+        <div class="sources">
+          ${this.sources.map(
+            (src) => html`
+              <div class="legend-row ${src.status}">
+                <div
+                  class="legend-dot"
+                  style="background:${src.color};border:1.5px solid rgba(0,0,0,0.12)"
+                ></div>
+                ${src.label}
+              </div>
+            `,
+          )}
+        </div>
       </div>
     `;
   }
@@ -402,19 +394,6 @@ class AppUI extends LitElement {
           >
             Clusters
           </button>
-        </div>
-
-        <div id="sources">
-          ${this.sources.map(
-            (src) => html`
-              <div
-                class="source-badge ${src.status}"
-                style="background: ${src.color}"
-              >
-                ${src.label}
-              </div>
-            `,
-          )}
         </div>
 
         <div id="status" class="${this.statusHidden ? "hidden" : ""}">

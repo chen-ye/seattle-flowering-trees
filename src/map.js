@@ -11,7 +11,7 @@ export function createMap(containerId) {
     maxZoom: 19,
   });
 
-  map.addControl(new maplibregl.NavigationControl(), "top-right");
+  map.addControl(new maplibregl.NavigationControl(), "bottom-left");
   map.addControl(
     new maplibregl.ScaleControl({ unit: "imperial" }),
     "bottom-left",
