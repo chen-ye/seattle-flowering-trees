@@ -106,6 +106,29 @@ export const FLOWER_COLORS = {
   "PRUNUS LAUROCERASUS": "#f0f0f0",
   "PRUNUS LUSITANICA": "#f0f0f0",
   "PRUNUS CAROLINIANA": "#f5f5f0",
+  "PRUNUS KWANZAN": "#e8628c",
+  "PRUNUS SEKIYAMA": "#e8628c",
+  "PRUNUS BLIREIANA": "#e8628c",
+  "PRUNUS SHIROTAE": "#f8f0f4",
+  "PRUNUS AMANOGAWA": "#f4c8dc",
+  "PRUNUS SERRULA": "#f8f0f4",
+  "PRUNUS EMARGINATA": "#f8f0f4",
+  "PRUNUS ACCOLADE": "#f0a0c0",
+  "PRUNUS OKAME": "#e8436a",
+  "PRUNUS SPIRE": "#f4c8dc",
+  "PRUNUS SNOW GOOSE": "#f8f0f4",
+  "PRUNUS NEWPORT": "#f4c8dc",
+  "PRUNUS CASCADE SNOW": "#f8f0f4",
+  "PRUNUS BENI-TAMANISHIKI": "#f0a0c0",
+  "PRUNUS SHIRO-FUGEN": "#f8f0f4",
+  "PRUNUS SNOW FOUNTAIN": "#f8f0f4",
+  "PRUNUS DREAM CATCHER": "#f0a0c0",
+  "PRUNUS SHOGETSU": "#f4c8dc",
+  "PRUNUS SUBCORDATA": "#f8f0f4",
+  "PRUNUS TOMENTOSA": "#f4c8dc",
+  "PRUNUS JAPONICA": "#f4c8dc",
+  "PRUNUS GLANDULOSA": "#f4c8dc",
+  "PRUNUS JUDDII": "#f0a0c0",
 };
 
 export const SPECIES_LABELS = {
@@ -134,6 +157,29 @@ export const SPECIES_LABELS = {
   "PRUNUS VIRGINIANA": "Chokecherry",
   "PRUNUS PADUS": "Bird Cherry",
   "PRUNUS LAUROCERASUS": "Cherry Laurel",
+  "PRUNUS KWANZAN": "Kwanzan Cherry",
+  "PRUNUS SEKIYAMA": "Kwanzan Cherry",
+  "PRUNUS BLIREIANA": "Blireiana Plum",
+  "PRUNUS SHIROTAE": "Shirotae Cherry",
+  "PRUNUS AMANOGAWA": "Amanogawa Cherry",
+  "PRUNUS SERRULA": "Birchbark Cherry",
+  "PRUNUS EMARGINATA": "Bitter Cherry",
+  "PRUNUS ACCOLADE": "Accolade Cherry",
+  "PRUNUS OKAME": "Okame Cherry",
+  "PRUNUS SPIRE": "Spire Cherry",
+  "PRUNUS SNOW GOOSE": "Snow Goose Cherry",
+  "PRUNUS NEWPORT": "Newport Plum",
+  "PRUNUS CASCADE SNOW": "Cascade Snow Cherry",
+  "PRUNUS BENI-TAMANISHIKI": "Spring Snow Cherry",
+  "PRUNUS SHIRO-FUGEN": "Shiro-fugen Cherry",
+  "PRUNUS SNOW FOUNTAIN": "Snow Fountain Cherry",
+  "PRUNUS DREAM CATCHER": "Dream Catcher Cherry",
+  "PRUNUS SHOGETSU": "Shogetsu Cherry",
+  "PRUNUS SUBCORDATA": "Sierra Plum",
+  "PRUNUS TOMENTOSA": "Nanking Cherry",
+  "PRUNUS JAPONICA": "Korean Cherry",
+  "PRUNUS GLANDULOSA": "Flowering Almond",
+  "PRUNUS JUDDII": "Judd Cherry",
 };
 
 export const COLOR_LABEL = {};
@@ -148,16 +194,23 @@ export const FLOWER_COLOR_KEYS = Object.keys(FLOWER_COLORS).sort(
 
 export function getFlowerColor(scientific) {
   if (!scientific) return null;
-  const upper = scientific.trim().toUpperCase();
+  let upper = scientific.trim().toUpperCase().replace(/\s+/g, " ").replace(/[`'"]/g, "");
+  upper = upper.replace(/^PRUNUS X /, "PRUNUS ");
+  upper = upper.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
+
   for (const prefix of FLOWER_COLOR_KEYS) {
-    if (upper.startsWith(prefix)) return FLOWER_COLORS[prefix];
+    if (upper.startsWith(prefix) || upper.includes(prefix.replace("PRUNUS ", ""))) {
+      return FLOWER_COLORS[prefix];
+    }
   }
   return null;
 }
 
 export function formatSciLabel(sci) {
   if (!sci) return "Other Prunus";
-  const parts = sci.split(" ");
+  let clean = sci.trim().replace(/[`'"]/g, "").replace(/\s+/g, " ");
+  clean = clean.replace(/^Prunus x /i, "Prunus ");
+  const parts = clean.split(" ");
   return parts.length >= 2 ? `P. ${parts[1].toLowerCase()}` : sci;
 }
 
@@ -179,6 +232,25 @@ export function isFloweringCherry(common, scientific) {
     "PRUNUS CAMPANULATA",
     "PRUNUS NIPPONICA",
     "PRUNUS JAMASAKURA",
+    "PRUNUS KWANZAN",
+    "PRUNUS SEKIYAMA",
+    "PRUNUS SHIROTAE",
+    "PRUNUS AMANOGAWA",
+    "PRUNUS SERRULA",
+    "PRUNUS ACCOLADE",
+    "PRUNUS OKAME",
+    "PRUNUS SPIRE",
+    "PRUNUS SNOW GOOSE",
+    "PRUNUS CASCADE SNOW",
+    "PRUNUS BENI-TAMANISHIKI",
+    "PRUNUS SHIRO-FUGEN",
+    "PRUNUS SNOW FOUNTAIN",
+    "PRUNUS DREAM CATCHER",
+    "PRUNUS SHOGETSU",
+    "PRUNUS JUDDII",
   ];
-  return CHERRY_PREFIXES.some((prefix) => sci.startsWith(prefix));
+  let upperSci = sci.replace(/\s+/g, " ").replace(/[`'"]/g, "");
+  upperSci = upperSci.replace(/^PRUNUS X /, "PRUNUS ");
+  upperSci = upperSci.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
+  return CHERRY_PREFIXES.some((prefix) => upperSci.startsWith(prefix) || upperSci.includes(prefix.replace("PRUNUS ", "")));
 }
