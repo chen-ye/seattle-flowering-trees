@@ -35,6 +35,8 @@ export const SOURCES = [
     label: "Seattle Parks",
     color: "#27ae60",
     base: "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Tree_View/FeatureServer/0",
+    sciField: "SPECIES",
+    commonField: "COMMON",
   },
   {
     id: "ufs",
