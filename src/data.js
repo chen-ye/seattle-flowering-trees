@@ -4,6 +4,7 @@ import {
   COND_ALIASES,
   isFloweringCherry,
   getFlowerColor,
+  getBloomingPeriod,
 } from "./constants.js";
 
 function matchField(names, aliases) {
@@ -142,6 +143,7 @@ export async function fetchSourceData(source) {
         _color: source.color,
         _is_cherry: isFloweringCherry(com, sci),
         _flower_color: getFlowerColor(sci),
+        _blooming: getBloomingPeriod(sci),
       },
     };
   });
