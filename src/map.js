@@ -103,17 +103,27 @@ export function addLayersForSource(map, sourceId, visible) {
     paint: {
       "circle-color": ["coalesce", ["get", "_flower_color"], COLORS.single],
       "circle-radius": [
-        "case",
-        ["!=", ["get", "_size"], null],
-        [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          12, ["max", 2, ["/", ["get", "_size"], 10]],
-          16, ["max", 4, ["/", ["get", "_size"], 5]],
-          19, ["max", 7, ["/", ["get", "_size"], 2.5]]
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        12, [
+          "case",
+          ["!=", ["get", "_size"], null],
+          ["max", 2, ["/", ["get", "_size"], 10]],
+          3.5
         ],
-        ["interpolate", ["linear"], ["zoom"], 12, 3.5, 16, 6, 19, 9]
+        16, [
+          "case",
+          ["!=", ["get", "_size"], null],
+          ["max", 4, ["/", ["get", "_size"], 5]],
+          6
+        ],
+        19, [
+          "case",
+          ["!=", ["get", "_size"], null],
+          ["max", 7, ["/", ["get", "_size"], 2.5]],
+          9
+        ]
       ],
       "circle-opacity": 0.85,
       "circle-stroke-width": 1,
@@ -186,17 +196,27 @@ export function addRawLayersForSource(map, sourceId, visible) {
     paint: {
       "circle-color": ["coalesce", ["get", "_flower_color"], COLORS.single],
       "circle-radius": [
-        "case",
-        ["!=", ["get", "_size"], null],
-        [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          10, ["max", 1.5, ["/", ["get", "_size"], 15]],
-          14, ["max", 3, ["/", ["get", "_size"], 8]],
-          19, ["max", 6, ["/", ["get", "_size"], 3]]
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        10, [
+          "case",
+          ["!=", ["get", "_size"], null],
+          ["max", 1.5, ["/", ["get", "_size"], 15]],
+          2.5
         ],
-        ["interpolate", ["linear"], ["zoom"], 10, 2.5, 14, 4.5, 19, 8]
+        14, [
+          "case",
+          ["!=", ["get", "_size"], null],
+          ["max", 3, ["/", ["get", "_size"], 8]],
+          4.5
+        ],
+        19, [
+          "case",
+          ["!=", ["get", "_size"], null],
+          ["max", 6, ["/", ["get", "_size"], 3]],
+          8
+        ]
       ],
       "circle-opacity": 0.8,
       "circle-stroke-width": 0.8,
