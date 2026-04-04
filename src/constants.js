@@ -1,5 +1,22 @@
 export const SOURCES = [
   {
+    id: "bellevue",
+    label: "Bellevue City Trees",
+    color: "#f1c40f",
+    base: "https://services1.arcgis.com/EYzEZbDhXZjURPbP/arcgis/rest/services/City_Trees/FeatureServer/29",
+    combinedField: "SpeciesDesc",
+    extractSpecies: (val) => {
+      if (!val) return { sci: "", com: "" };
+      const parts = val.split(" - ");
+      if (parts.length > 1) {
+        let com = parts[1].trim();
+        com = com.replace(/\(.*\)/, "").trim();
+        return { sci: parts[0].trim(), com: com };
+      }
+      return { sci: val, com: val };
+    }
+  },
+  {
     id: "sdot",
     label: "SDOT",
     color: "#e8436a",
