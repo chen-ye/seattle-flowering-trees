@@ -31,24 +31,62 @@ class AppUI extends LitElement {
       pointer-events: auto;
     }
 
-    #panel {
-      position: absolute;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.96);
-      border-radius: 12px;
-      padding: 12px 18px;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.14);
+    #top {
       display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
+      flex-direction: column;
+      padding: 12px;
       gap: 12px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      width: 90vw;
-      max-width: 600px;
+
+      #panel {
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 12px;
+        padding: 12px 18px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.14);
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        width: 90vw;
+        max-width: 600px;
+      }
+
+      #sources {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 95vw;
+        max-width: 600px;
+      }
+      @media (min-width: 480px) {
+        #sources {
+          top: 62px;
+          width: auto;
+          max-width: 90vw;
+        }
+      }
+
+      .source-badge {
+        padding: 3px 9px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        color: white;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+        white-space: nowrap;
+      }
+      .source-badge.loaded {
+        opacity: 1;
+      }
+      .source-badge.error {
+        opacity: 0.4;
+        text-decoration: line-through;
+      }
+
     }
 
     h1 {
@@ -107,44 +145,6 @@ class AppUI extends LitElement {
       background: #e8436a;
       border-color: #e8436a;
       color: white;
-    }
-
-    #sources {
-      position: absolute;
-      top: 100px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-      justify-content: center;
-      width: 95vw;
-      max-width: 600px;
-    }
-    @media (min-width: 480px) {
-      #sources {
-        top: 62px;
-        width: auto;
-        max-width: 90vw;
-      }
-    }
-
-    .source-badge {
-      padding: 3px 9px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 500;
-      color: white;
-      opacity: 0.5;
-      transition: opacity 0.3s;
-      white-space: nowrap;
-    }
-    .source-badge.loaded {
-      opacity: 1;
-    }
-    .source-badge.error {
-      opacity: 0.4;
-      text-decoration: line-through;
     }
 
     #status {
@@ -346,7 +346,7 @@ class AppUI extends LitElement {
     }
 
     return html`
-      <div>
+      <div id="top">
         <div id="panel">
           <h1>🌸 Seattle Flowering Trees</h1>
           <div class="divider"></div>
