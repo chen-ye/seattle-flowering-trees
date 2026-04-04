@@ -175,6 +175,8 @@
     <button class="filter-btn active" data-filter="cherry">Flowering Cherry</button>
     <button class="filter-btn"        data-filter="all"   >All Prunus</button>
   </div>
+  <div class="divider"></div>
+  <button class="filter-btn active" id="cluster-toggle" title="Toggle clustering">Clusters</button>
 </div>
 
 <!-- Per-source loading badges -->
@@ -439,6 +441,19 @@ function addOrUpdateSource(sourceId, features) {
   return true; // created
 }
 
+function addOrUpdateRawSource(sourceId, features) {
+  if (map.getSource(sourceId)) {
+    map.getSource(sourceId).setData(geojson(features));
+    return false;
+  }
+  map.addSource(sourceId, {
+    type: 'geojson',
+    data: geojson(features),
+    cluster: false,
+  });
+  return true;
+}
+
 function addLayersForSource(sourceId, visible) {
   const v = visible ? 'visible' : 'none';
   const prefix = sourceId.replace('-source', '');
@@ -533,6 +548,43 @@ function addLayersForSource(sourceId, visible) {
   map.on('mouseleave', `${prefix}-points`,   () => { map.getCanvas().style.cursor = ''; });
 }
 
+function addRawLayersForSource(sourceId, visible) {
+  const v      = visible ? 'visible' : 'none';
+  const prefix  = sourceId.replace(/-source$/, '');
+  const layerId = `${prefix}-points`;
+
+  map.addLayer({
+    id: layerId,
+    type: 'circle',
+    source: sourceId,
+    layout: { visibility: v },
+    paint: {
+      'circle-color': ['coalesce', ['get', '_color'], COLORS.single],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 14, 4.5, 19, 8],
+      'circle-opacity': 0.8,
+      'circle-stroke-width': 0.8,
+      'circle-stroke-color': 'rgba(255,255,255,0.6)',
+    },
+  });
+
+  map.on('click', layerId, e => {
+    const f = e.features[0];
+    const p = f.properties;
+    const coords = f.geometry.coordinates.slice();
+    const nameHtml = p._common    ? `<div class="popup-name">${p._common}</div>` : '';
+    const sciHtml  = p._scientific && p._scientific !== p._common
+      ? `<div class="popup-sci">${p._scientific}</div>` : '';
+    const condHtml = p._condition ? `<div class="popup-cond">Condition: ${p._condition}</div>` : '';
+    const srcHtml  = `<div class="popup-source" style="background:${p._color}">${p._source}</div>`;
+    new maplibregl.Popup({ offset: 8, maxWidth: '260px' })
+      .setLngLat(coords)
+      .setHTML(nameHtml + sciHtml + condHtml + srcHtml)
+      .addTo(map);
+  });
+  map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+  map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Accumulated feature state
 // ─────────────────────────────────────────────────────────────────────────────
@@ -543,9 +595,12 @@ function refreshMapData() {
   const cherryFeatures = allFeatures.filter(f => f.properties._is_cherry);
 
   const cherryCreated = addOrUpdateSource('cherry-source', cherryFeatures);
-  if (cherryCreated) addLayersForSource('cherry-source', true);
+  if (cherryCreated) addLayersForSource('cherry-source', clustered && currentFilter === 'cherry');
 
-  // "all" source is only added/shown once fully populated (see bootstrap)
+  const cherryRawCreated = addOrUpdateRawSource('cherry-raw-source', cherryFeatures);
+  if (cherryRawCreated) addRawLayersForSource('cherry-raw-source', !clustered && currentFilter === 'cherry');
+
+  // "all" sources only added/shown once fully populated (see bootstrap)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -553,27 +608,39 @@ function refreshMapData() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 let currentFilter = 'cherry';
+let clustered     = true;
 
 const LAYER_GROUPS = {
-  cherry: ['cherry-clusters', 'cherry-cluster-count', 'cherry-points'],
-  all:    ['all-clusters',    'all-cluster-count',    'all-points'],
+  cherry:         ['cherry-clusters', 'cherry-cluster-count', 'cherry-points'],
+  all:            ['all-clusters',    'all-cluster-count',    'all-points'],
+  'cherry-raw':   ['cherry-raw-points'],
+  'all-raw':      ['all-raw-points'],
 };
 
-document.querySelectorAll('.filter-btn').forEach(btn => {
+function applyVisibility() {
+  const active = clustered ? currentFilter : `${currentFilter}-raw`;
+  Object.entries(LAYER_GROUPS).forEach(([key, layers]) => {
+    const vis = key === active ? 'visible' : 'none';
+    layers.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis); });
+  });
+}
+
+document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
   btn.addEventListener('click', () => {
     const f = btn.dataset.filter;
     if (f === currentFilter) return;
     currentFilter = f;
-
-    document.querySelectorAll('.filter-btn').forEach(b =>
+    document.querySelectorAll('.filter-btn[data-filter]').forEach(b =>
       b.classList.toggle('active', b === btn)
     );
-
-    Object.entries(LAYER_GROUPS).forEach(([key, layers]) => {
-      const vis = key === f ? 'visible' : 'none';
-      layers.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis); });
-    });
+    applyVisibility();
   });
+});
+
+document.getElementById('cluster-toggle').addEventListener('click', function () {
+  clustered = !clustered;
+  this.classList.toggle('active', clustered);
+  applyVisibility();
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -627,10 +694,13 @@ map.on('load', async () => {
 
   await Promise.all(promises);
 
-  // Finalise the "all Prunus" source (added after all data is loaded
-  // so its clusters reflect the complete dataset)
+  // Finalise the "all Prunus" sources (added after all data is loaded
+  // so clusters reflect the complete dataset)
   const allCreated = addOrUpdateSource('all-source', allFeatures);
-  if (allCreated) addLayersForSource('all-source', false);
+  if (allCreated) addLayersForSource('all-source', clustered && currentFilter === 'all');
+
+  const allRawCreated = addOrUpdateRawSource('all-raw-source', allFeatures);
+  if (allRawCreated) addRawLayersForSource('all-raw-source', !clustered && currentFilter === 'all');
 
   const cherryTotal = allFeatures.filter(f => f.properties._is_cherry).length;
   const grandTotal  = allFeatures.length;
