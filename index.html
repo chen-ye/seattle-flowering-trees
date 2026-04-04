@@ -221,6 +221,8 @@ const SOURCES = [
     label: 'UW Campus',
     color: '#9b59b6',
     base:  'https://gis.maps.uw.edu/federated/rest/services/PublicData/PublicData/FeatureServer/37',
+    sciField:    'SpeciesName',
+    commonField: 'CommonName',
   },
   {
     id:    'spr',
@@ -238,7 +240,10 @@ const SOURCES = [
     id:    'arboretum',
     label: 'WP Arboretum',
     color: '#2980b9',
-    base:  'https://uwbgmaps.sefs.uw.edu/arcgis/rest/services/Master/MapServer/0',
+    base:  'https://uwbgmaps.sefs.uw.edu/arcgis/rest/services/Master/MapServer/1',
+    sciField:    'BGBaseData.ScientificName',
+    commonField: 'BGBaseData.CommonName',
+    condField:   'BGBaseData.Condition',
   },
 ];
 
