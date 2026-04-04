@@ -1,3 +1,11 @@
+
+const warnedMessages = new Set();
+function warnOnce(msg) {
+  if (!warnedMessages.has(msg)) {
+    console.warn(msg);
+    warnedMessages.add(msg);
+  }
+}
 export const SOURCES = [
   {
     id: "bellevue",
@@ -294,7 +302,7 @@ export function getFlowerColor(scientific) {
     }
   }
   if (upper.startsWith("PRUNUS") && upper !== "PRUNUS" && upper !== "PRUNUS SP") {
-    console.warn(`[getFlowerColor] Unmatched Prunus variety: ${scientific}`);
+    warnOnce(`[getFlowerColor] Unmatched Prunus variety: ${scientific}`);
   }
   return null;
 }
@@ -350,7 +358,7 @@ export function isFloweringCherry(common, scientific) {
   const matched = CHERRY_PREFIXES.some((prefix) => upperSci.startsWith(prefix) || upperSci.includes(prefix.replace("PRUNUS ", "")));
   if (!matched && upperSci.startsWith("PRUNUS") && upperSci !== "PRUNUS" && upperSci !== "PRUNUS SP") {
     // Some are genuinely not flowering cherries (e.g. laurels, plums), but log anyway to catch misses
-    console.warn(`[isFloweringCherry] Prunus variety not in CHERRY_PREFIXES (might be correct if not a cherry): ${scientific}`);
+    warnOnce(`[isFloweringCherry] Prunus variety not in CHERRY_PREFIXES (might be correct if not a cherry): ${scientific}`);
   }
   return matched;
 }
@@ -432,7 +440,7 @@ export function getBloomingPeriod(scientific) {
     }
   }
   if (upper.startsWith("PRUNUS") && upper !== "PRUNUS" && upper !== "PRUNUS SP") {
-    console.warn(`[getBloomingPeriod] Unmatched Prunus variety: ${scientific}`);
+    warnOnce(`[getBloomingPeriod] Unmatched Prunus variety: ${scientific}`);
   }
   return null;
 }
