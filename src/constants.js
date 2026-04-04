@@ -107,9 +107,44 @@ export const SOURCES = [
     },
     sizeField: "DBH__in_",
   },
+  {
+    id: "auburn",
+    label: "Auburn Tree Inventory",
+    color: "#f39c12",
+    sciField: "GENUS",
+    commonField: "NAME",
+  },
+  {
+    id: "renton",
+    label: "Renton Tree Sites",
+    color: "#16a085",
+    combinedField: "Tree Species",
+  },
+      {
+    id: "sammamish_public",
+    label: "Sammamish Public Tree Inventory",
+    color: "#8e44ad",
+    sciField: "Genus",
+    commonField: "Species",
+    parseSpecies: (p) => {
+      const sci = ((p.Genus || "") + " " + (p.Species || "")).trim();
+      return { sci, com: sci };
+    }
+  },
+      {
+    id: "sammamish_row",
+    label: "Sammamish ROW Tree Study",
+    color: "#2c3e50",
+    sciField: "Genus",
+    commonField: "Species",
+    parseSpecies: (p) => {
+      const sci = ((p.Genus || "") + " " + (p.Species || "")).trim();
+      return { sci, com: sci };
+    }
+  },
 ];
-
 export const SCI_ALIASES = [
+  "FAMILY",
   "SCIENTIFIC_NAME",
   "BOTANICAL_NAME",
   "SCI_NAME",
@@ -143,7 +178,6 @@ export const SIZE_ALIASES = [
   "TREE_DBH",
   "TREEDIAMETER_IN",
 ];
-
 export const COND_ALIASES = [
   "CONDITION",
   "CONDITION_",
@@ -151,14 +185,12 @@ export const COND_ALIASES = [
   "COND",
   "RATING",
 ];
-
 export const COLORS = {
   single: "#e8436a",
   small: "#f28cb1",
   medium: "#d63579",
   large: "#a0195a",
 };
-
 export const FLOWER_COLORS = {
   "PRUNUS X YEDOENSIS": "#f4c8dc",
   "PRUNUS YEDOENSIS": "#f4c8dc",
@@ -220,7 +252,6 @@ export const FLOWER_COLORS = {
   "PRUNUS BLIREANA": "#e8628c",
   "PRUNUS YEDEOENSIS": "#f4c8dc",
 };
-
 export const SPECIES_LABELS = {
   "PRUNUS X YEDOENSIS": "Yoshino Cherry",
   "PRUNUS YEDOENSIS": "Yoshino Cherry",
@@ -279,23 +310,19 @@ export const SPECIES_LABELS = {
   "PRUNUS PUGETENSIS": "Puget Sound Cherry",
   "PRUNUS YEDEOENSIS": "Yoshino Cherry",
 };
-
 export const COLOR_LABEL = {};
 for (const [prefix, color] of Object.entries(FLOWER_COLORS)) {
   if (!COLOR_LABEL[color] && SPECIES_LABELS[prefix])
     COLOR_LABEL[color] = SPECIES_LABELS[prefix];
 }
-
 export const FLOWER_COLOR_KEYS = Object.keys(FLOWER_COLORS).sort(
   (a, b) => b.length - a.length,
 );
-
 export function getFlowerColor(scientific) {
   if (!scientific) return null;
   let upper = scientific.trim().toUpperCase().replace(/\s+/g, " ").replace(/[`'"]/g, "");
   upper = upper.replace(/^PRUNUS X /, "PRUNUS ");
   upper = upper.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
-
   for (const prefix of FLOWER_COLOR_KEYS) {
     if (upper.startsWith(prefix) || upper.includes(prefix.replace("PRUNUS ", ""))) {
       return FLOWER_COLORS[prefix];
@@ -306,7 +333,6 @@ export function getFlowerColor(scientific) {
   }
   return null;
 }
-
 export function formatSciLabel(sci) {
   if (!sci) return "Other Prunus";
   let clean = sci.trim().replace(/[`'"]/g, "").replace(/\s+/g, " ");
@@ -314,13 +340,10 @@ export function formatSciLabel(sci) {
   const parts = clean.split(" ");
   return parts.length >= 2 ? `P. ${parts[1].toLowerCase()}` : sci;
 }
-
 export function isFloweringCherry(common, scientific) {
   const cn = common.toUpperCase();
   const sci = scientific.toUpperCase();
-
   if (cn.includes("CHERRY") && !cn.includes("LAUREL")) return true;
-
   const CHERRY_PREFIXES = [
     "PRUNUS SERRULATA",
     "PRUNUS YEDOENSIS",
@@ -362,8 +385,6 @@ export function isFloweringCherry(common, scientific) {
   }
   return matched;
 }
-
-
 export const BLOOMING_PERIODS = {
   "PRUNUS MUME": "early",
   "PRUNUS CAMPANULATA": "early",
@@ -379,7 +400,6 @@ export const BLOOMING_PERIODS = {
   "PRUNUS CAROLINIANA": "early",
   "PRUNUS SALICINA": "early",
   "PRUNUS BLIREANA": "early",
-
   "PRUNUS YEDOENSIS": "mid",
   "PRUNUS X YEDOENSIS": "mid",
   "PRUNUS ACCOLADE": "mid",
@@ -408,7 +428,6 @@ export const BLOOMING_PERIODS = {
   "PRUNUS DOMESTICA": "mid",
   "PRUNUS PUGETENSIS": "mid",
   "PRUNUS YEDEOENSIS": "mid",
-
   "PRUNUS SERRULATA": "late",
   "PRUNUS KWANZAN": "late",
   "PRUNUS SEKIYAMA": "late",
@@ -423,17 +442,14 @@ export const BLOOMING_PERIODS = {
   "PRUNUS ILICIFOLIA": "late",
   "PRUNUS LUSITANICA": "late"
 };
-
 export const BLOOMING_KEYS = Object.keys(BLOOMING_PERIODS).sort(
   (a, b) => b.length - a.length,
 );
-
 export function getBloomingPeriod(scientific) {
   if (!scientific) return null;
   let upper = scientific.trim().toUpperCase().replace(/\s+/g, " ").replace(/[`'"]/g, "");
   upper = upper.replace(/^PRUNUS X /, "PRUNUS ");
   upper = upper.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
-
   for (const prefix of BLOOMING_KEYS) {
     if (upper.startsWith(prefix) || upper.includes(prefix.replace("PRUNUS ", ""))) {
       return BLOOMING_PERIODS[prefix];

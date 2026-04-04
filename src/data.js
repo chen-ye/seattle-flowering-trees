@@ -22,6 +22,7 @@ function matchField(names, aliases) {
 }
 
 export async function discoverFields(source) {
+  if (!source.base) return;
   let meta;
   try {
     const res = await fetch(`${source.base}?f=json`);
@@ -69,6 +70,7 @@ export async function discoverFields(source) {
 const PAGE_SIZE = 2000;
 
 export async function fetchSourceData(source) {
+  if (!source.base) return [];
   await discoverFields(source);
 
     const whereParts = [];
@@ -134,9 +136,13 @@ export async function fetchSourceData(source) {
     let sci = "";
     let com = "";
 
-    if (source.combinedField && source.extractSpecies) {
+    if (source.parseSpecies) {
+      const extracted = source.parseSpecies(p);
+      sci = (extracted.sci || "").trim();
+      com = (extracted.com || "").trim();
+    } else if (source.combinedField && source.extractSpecies) {
       const val = p[source.combinedField] || "";
-      const extracted = source.extractSpecies(val);
+      const extracted = source.extractSpecies(val, p);
       sci = (extracted.sci || "").trim();
       com = (extracted.com || "").trim();
     } else {
