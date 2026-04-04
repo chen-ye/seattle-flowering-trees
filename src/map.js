@@ -125,9 +125,9 @@ export function addLayersForSource(map, sourceId, visible) {
     })[0];
     map
       .getSource(sourceId)
-      .getClusterExpansionZoom(f.properties.cluster_id, (err, zoom) => {
-        if (!err)
-          map.easeTo({ center: f.geometry.coordinates, zoom: zoom + 0.5 });
+      .getClusterExpansionZoom(f.properties.cluster_id)
+      .then((zoom) => {
+        map.easeTo({ center: f.geometry.coordinates, zoom: zoom + 0.5 });
       });
   });
 
