@@ -49,7 +49,6 @@ class AppUI extends LitElement {
         align-items: center;
         flex-wrap: nowrap;
         overflow-x: auto;
-        justify-content: center;
         gap: 12px;
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
