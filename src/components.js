@@ -47,7 +47,8 @@ class AppUI extends LitElement {
         padding: 12px 18px;
         display: flex;
         align-items: center;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow-x: auto;
         justify-content: center;
         gap: 12px;
         backdrop-filter: blur(6px);
@@ -62,7 +63,7 @@ class AppUI extends LitElement {
         line-height: 1.8;
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
-        max-height: 40vh;
+        max-height: 25vh;
         overflow-y: auto;
         max-width: 150px;
         display: flex;
@@ -352,7 +353,7 @@ class AppUI extends LitElement {
     return html`
       <div id="top">
         <div id="panel">
-          <h1>🌸 Seattle Flowering Trees</h1>
+          <h1>🌸</h1>
           <div class="divider"></div>
           <div class="filter-group" role="group" aria-label="Tree filter">
             <button
