@@ -11,8 +11,8 @@ import {
 import "./components.js";
 
 let allFeatures = [];
+let clustered = false;
 let currentFilter = "cherry";
-let clustered = true;
 
 const map = createMap("map");
 const ui = document.querySelector("app-ui");

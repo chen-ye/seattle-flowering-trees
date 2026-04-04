@@ -227,7 +227,7 @@ class AppUI extends LitElement {
   constructor() {
     super();
     this.currentFilter = "cherry";
-    this.clustered = true;
+    this.clustered = false;
     this.sources = [];
     this.loadedCount = 0;
     this.failedCount = 0;
