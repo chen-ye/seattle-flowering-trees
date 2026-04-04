@@ -63,9 +63,7 @@ export async function discoverFields(source) {
     source.statusClause = null;
   }
 
-  console.log(
-    `[${source.label}] fields — sci: ${source.sciField}, common: ${source.commonField}, cond: ${source.condField}, size: ${source.sizeField}`,
-  );
+  console.log(`[${source.label}] fields — combined: ${source.combinedField}, sci: ${source.sciField}, common: ${source.commonField}, cond: ${source.condField}, size: ${source.sizeField}`);
 }
 
 const PAGE_SIZE = 2000;
@@ -73,8 +71,10 @@ const PAGE_SIZE = 2000;
 export async function fetchSourceData(source) {
   await discoverFields(source);
 
-  const whereParts = [];
-  if (source.sciField) {
+    const whereParts = [];
+  if (source.combinedField) {
+    whereParts.push(`UPPER(${source.combinedField}) LIKE 'PRUNUS%'`);
+  } else if (source.sciField) {
     whereParts.push(`UPPER(${source.sciField}) LIKE 'PRUNUS%'`);
   } else {
     whereParts.push("1=1");
@@ -83,7 +83,7 @@ export async function fetchSourceData(source) {
   const where = whereParts.join(" AND ");
 
   const outFields =
-    [source.sciField, source.commonField, source.condField, source.sizeField]
+    [source.combinedField, source.sciField, source.commonField, source.condField, source.sizeField]
       .filter(Boolean)
       .join(",") || "*";
 
@@ -130,8 +130,20 @@ export async function fetchSourceData(source) {
 
   return pages.flat().map((f) => {
     const p = f.properties || {};
-    const sci = ((source.sciField && p[source.sciField]) || "").trim();
-    const com = ((source.commonField && p[source.commonField]) || "").trim();
+
+    let sci = "";
+    let com = "";
+
+    if (source.combinedField && source.extractSpecies) {
+      const val = p[source.combinedField] || "";
+      const extracted = source.extractSpecies(val);
+      sci = (extracted.sci || "").trim();
+      com = (extracted.com || "").trim();
+    } else {
+      sci = ((source.sciField && p[source.sciField]) || "").trim();
+      com = ((source.commonField && p[source.commonField]) || "").trim();
+    }
+
     const cond = ((source.condField && p[source.condField]) || "").trim();
     const sizeVal = source.sizeField ? p[source.sizeField] : null;
     const size = typeof sizeVal === "number" ? sizeVal : parseFloat(sizeVal);
