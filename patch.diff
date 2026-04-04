@@ -1,17 +1,18 @@
-<<<<<<< SEARCH
-  {
-    id: "spr",
-    label: "Seattle Parks",
-    color: "#27ae60",
-    base: "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Tree_View/FeatureServer/0",
-  },
-=======
-  {
-    id: "spr",
-    label: "Seattle Parks",
-    color: "#27ae60",
-    base: "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Tree_View/FeatureServer/0",
-    sciField: "SPECIES",
-    commonField: "COMMON",
-  },
->>>>>>> REPLACE
+--- src/constants.js
++++ src/constants.js
+@@ -37,10 +37,10 @@
+     id: "shoreline",
+     label: "City of Shoreline",
+     color: "#2ecc71",
+-    base: "https://services7.arcgis.com/iZIPdzAfqdnP9vrA/arcgis/rest/services/TreeInventory_Public/FeatureServer/0",
+-    commonField: "common_name",
+-    sciField: "Genus",
+-    condField: "CONDITION",
+-    sizeField: "DBH",
++    base: "https://gis.shorelinewa.gov/server/rest/services/BaseLayers/Trees/MapServer/0",
++    commonField: "Common_Nm",
++    sciField: "Scientific_Nm",
++    condField: "ConditionRating",
++    sizeField: "DBH1",
+   },
+   {
