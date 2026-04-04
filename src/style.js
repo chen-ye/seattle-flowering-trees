@@ -284,7 +284,7 @@ export const style = {
         "all",
         ["==", "is_tunnel", true],
         ["==", "kind", "highway"],
-        ["!", ["has", "is_link"]],
+        ["!has", "is_link"],
       ],
       paint: {
         "line-color": "#ffffff",
@@ -457,7 +457,7 @@ export const style = {
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
         ["==", "kind", "highway"],
-        ["!", ["has", "is_link"]],
+        ["!has", "is_link"],
       ],
       paint: {
         "line-color": "#ffffff",
@@ -596,7 +596,7 @@ export const style = {
         "all",
         ["==", "is_bridge", true],
         ["==", "kind", "highway"],
-        ["!", ["has", "is_link"]],
+        ["!has", "is_link"],
       ],
       paint: {
         "line-color": "#ffffff",
