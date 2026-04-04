@@ -250,14 +250,10 @@ class AppUI extends LitElement {
   handleBloomingFilterClick(filter) {
     let newFilters = [...this.currentBloomingFilters];
 
-    if (filter === "all") {
-      newFilters = ["early", "mid", "late"];
+    if (newFilters.includes(filter)) {
+      newFilters = newFilters.filter(f => f !== filter);
     } else {
-      if (newFilters.includes(filter)) {
-        newFilters = newFilters.filter(f => f !== filter);
-      } else {
-        newFilters.push(filter);
-      }
+      newFilters.push(filter);
     }
 
     this.currentBloomingFilters = newFilters;
@@ -378,14 +374,7 @@ class AppUI extends LitElement {
             </button>
           </div>
           <div class="divider"></div>
-          <div class="filter-group" role="group" aria-label="Blooming filter">
-            <button
-              class="filter-btn ${this.currentBloomingFilters.length === 3 ? "active" : ""}"
-              @click=${() => this.handleBloomingFilterClick("all")}
-            >
-              All Season
-            </button>
-            <button
+          <div class="filter-group" role="group" aria-label="Blooming filter">            <button
               class="filter-btn ${this.currentBloomingFilters.includes("early") ? "active" : ""}"
               @click=${() => this.handleBloomingFilterClick("early")}
             >
