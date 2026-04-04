@@ -67,6 +67,7 @@ export const SOURCES = [
     sciField: "BOTANICALN",
     commonField: "COMMONNAME",
     condField: "TREECONDIT",
+    sizeField: "DBH_Num",
   },
   {
     id: "shoreline",
@@ -74,14 +75,27 @@ export const SOURCES = [
     color: "#2ecc71",
     base: "https://services7.arcgis.com/iZIPdzAfqdnP9vrA/arcgis/rest/services/TreeInventory_Public/FeatureServer/0",
     commonField: "common_name",
+    sciField: "Genus",
     condField: "CONDITION",
+    sizeField: "DBH",
   },
   {
     id: "pierce",
     label: "Pierce County",
     color: "#f39c12",
     base: "https://services.arcgis.com/TosFUe3nXUAksqSj/arcgis/rest/services/Tree_Inventory11/FeatureServer/0",
-    commonField: "Species",
+        combinedField: "Species",
+    extractSpecies: (val) => {
+      if (!val) return { sci: "", com: "" };
+      const parts = val.split(" - ");
+      if (parts.length > 1) {
+        let com = parts[1].trim();
+        com = com.replace(/\(.*\)/, "").trim();
+        return { sci: parts[0].trim(), com: com };
+      }
+      return { sci: val, com: "" };
+    },
+    sizeField: "DBH__in_",
   },
 ];
 
