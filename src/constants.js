@@ -97,9 +97,41 @@ export const SOURCES = [
     },
     sizeField: "DBH__in_",
   },
+  {
+    id: "auburn",
+    label: "Auburn Tree Inventory",
+    color: "#f39c12",
+    base: "https://example.com/arcgis/rest/services/Trees/FeatureServer/0", // TODO: Add correct base URL
+    sciField: "GENUS",
+    commonField: "NAME",
+  },
+  {
+    id: "renton",
+    label: "Renton Tree Sites",
+    color: "#16a085",
+    base: "https://example.com/arcgis/rest/services/Trees/FeatureServer/0", // TODO: Add correct base URL
+    combinedField: "Tree Species",
+  },
+  {
+    id: "sammamish_public",
+    label: "Sammamish Public Tree Inventory",
+    color: "#8e44ad",
+    base: "https://example.com/arcgis/rest/services/Trees/FeatureServer/0", // TODO: Add correct base URL
+    sciField: "Genus",
+    commonField: "Species", // Based on "Fields: Species, Genus, Family"
+  },
+  {
+    id: "sammamish_row",
+    label: "Sammamish ROW Tree Study",
+    color: "#2c3e50",
+    base: "https://example.com/arcgis/rest/services/Trees/FeatureServer/0", // TODO: Add correct base URL
+    sciField: "Genus",
+    commonField: "Species", // Based on "Fields: Species, Genus, Family"
+  },
 ];
 
 export const SCI_ALIASES = [
+  "FAMILY",
   "SCIENTIFIC_NAME",
   "BOTANICAL_NAME",
   "SCI_NAME",
