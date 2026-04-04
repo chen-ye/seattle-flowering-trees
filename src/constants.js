@@ -17,13 +17,13 @@ export const SOURCES = [
     id: "spr",
     label: "Seattle Parks",
     color: "#27ae60",
-    base: "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Tree_View_OD/FeatureServer/0",
+    base: "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Tree_View/FeatureServer/0",
   },
   {
     id: "ufs",
     label: "SPR Food Systems",
     color: "#e67e22",
-    base: "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Urban_Food_Systems_Fruit_Trees_OD/FeatureServer/0",
+    base: "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Urban_Food_Systems_Fruit_Trees_Current/FeatureServer/0",
   },
   {
     id: "arboretum",
