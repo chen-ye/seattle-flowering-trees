@@ -32,10 +32,15 @@ class AppUI extends LitElement {
     }
 
     #top {
+      pointer-events: none;
       display: flex;
       flex-direction: column;
       padding: 12px;
       gap: 12px;
+
+      & > * {
+        pointer-events: auto;
+      }
 
       #panel {
         background: rgba(255, 255, 255, 0.96);
