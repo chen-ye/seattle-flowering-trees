@@ -82,10 +82,11 @@ export async function fetchSourceData(source) {
   if (source.statusClause) whereParts.push(source.statusClause);
   const where = whereParts.join(" AND ");
 
-  const outFields =
-    [source.combinedField, source.sciField, source.commonField, source.condField, source.sizeField]
-      .filter(Boolean)
-      .join(",") || "*";
+  const outFields = source.outFieldsOverride
+    ? source.outFieldsOverride.join(",")
+    : [source.combinedField, source.sciField, source.commonField, source.condField, source.sizeField]
+        .filter(Boolean)
+        .join(",") || "*";
 
   const countRes = await fetch(
     `${source.base}/query?` +
@@ -136,7 +137,7 @@ export async function fetchSourceData(source) {
 
     if (source.combinedField && source.extractSpecies) {
       const val = p[source.combinedField] || "";
-      const extracted = source.extractSpecies(val);
+      const extracted = source.extractSpecies(val, p);
       sci = (extracted.sci || "").trim();
       com = (extracted.com || "").trim();
     } else {
