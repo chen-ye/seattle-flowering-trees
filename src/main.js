@@ -13,7 +13,7 @@ import "./components.js";
 let allFeatures = [];
 let clustered = false;
 let currentFilter = "cherry";
-let currentBloomingFilter = "all";
+let currentBloomingFilters = ["early", "mid", "late"];
 
 const map = createMap("map");
 const ui = document.querySelector("app-ui");
@@ -27,8 +27,8 @@ ui.addEventListener("filter-changed", (e) => {
 });
 
 
-ui.addEventListener("blooming-filter-changed", (e) => {
-  currentBloomingFilter = e.detail.filter;
+ui.addEventListener("blooming-filters-changed", (e) => {
+  currentBloomingFilters = e.detail.filters;
   refreshMapData();
   applyVisibility(map, currentFilter, clustered);
   ui.requestUpdate();
@@ -42,8 +42,15 @@ ui.addEventListener("cluster-toggled", (e) => {
 
 function refreshMapData() {
   const filteredFeatures = allFeatures.filter((f) => {
-    if (currentBloomingFilter !== "all" && f.properties._blooming !== currentBloomingFilter) {
-      return false;
+    if (f.properties._blooming) {
+      if (!currentBloomingFilters.includes(f.properties._blooming)) {
+        return false;
+      }
+    } else {      if (currentBloomingFilters.length < 3) {
+        if (!currentBloomingFilters.includes(f.properties._blooming)) {
+          return false;
+        }
+      }
     }
     return true;
   });
