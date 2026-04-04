@@ -157,6 +157,7 @@ export async function fetchSourceData(source) {
         _condition: cond,
         _size: isNaN(size) ? null : size,
         _source: source.label,
+        _base: source.base,
         _color: source.color,
         _is_cherry: isFloweringCherry(com, sci),
         _flower_color: getFlowerColor(sci),

@@ -325,7 +325,7 @@ class AppUI extends LitElement {
                   class="legend-dot"
                   style="background:${src.color};border:1.5px solid rgba(0,0,0,0.12)"
                 ></div>
-                ${src.label}
+                <a href="${src.base}" target="_blank" style="color:inherit; text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${src.label}</a>
               </div>
             `,
           )}
