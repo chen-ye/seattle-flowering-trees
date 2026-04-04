@@ -51,6 +51,52 @@ export const SOURCES = [
     commonField: "BGBaseData.CommonName",
     condField: "BGBaseData.Condition",
   },
+  {
+    id: "redmond",
+    label: "City of Redmond",
+    color: "#3498db",
+    base: "https://services7.arcgis.com/9u5SMK7jcrQbBJIC/arcgis/rest/services/TreeSite/FeatureServer/0",
+    sciField: "GenusSpecies",
+    commonField: "CommonName",
+  },
+  {
+    id: "kirkland",
+    label: "City of Kirkland",
+    color: "#e74c3c",
+    base: "https://services.arcgis.com/FLM8UAw9y5MmuVTV/arcgis/rest/services/Street_Trees/FeatureServer/0",
+    sciField: "BOTANICALN",
+    commonField: "COMMONNAME",
+    condField: "TREECONDIT",
+    sizeField: "DBH_Num",
+  },
+  {
+    id: "shoreline",
+    label: "City of Shoreline",
+    color: "#2ecc71",
+    base: "https://services7.arcgis.com/iZIPdzAfqdnP9vrA/arcgis/rest/services/TreeInventory_Public/FeatureServer/0",
+    commonField: "common_name",
+    sciField: "Genus",
+    condField: "CONDITION",
+    sizeField: "DBH",
+  },
+  {
+    id: "pierce",
+    label: "Pierce County",
+    color: "#f39c12",
+    base: "https://services.arcgis.com/TosFUe3nXUAksqSj/arcgis/rest/services/Tree_Inventory11/FeatureServer/0",
+        combinedField: "Species",
+    extractSpecies: (val) => {
+      if (!val) return { sci: "", com: "" };
+      const parts = val.split(" - ");
+      if (parts.length > 1) {
+        let com = parts[1].trim();
+        com = com.replace(/\(.*\)/, "").trim();
+        return { sci: parts[0].trim(), com: com };
+      }
+      return { sci: val, com: "" };
+    },
+    sizeField: "DBH__in_",
+  },
 ];
 
 export const SCI_ALIASES = [
