@@ -51,6 +51,38 @@ export const SOURCES = [
     commonField: "BGBaseData.CommonName",
     condField: "BGBaseData.Condition",
   },
+  {
+    id: "redmond",
+    label: "City of Redmond",
+    color: "#3498db",
+    base: "https://services7.arcgis.com/9u5SMK7jcrQbBJIC/arcgis/rest/services/TreeSite/FeatureServer/0",
+    sciField: "GenusSpecies",
+    commonField: "CommonName",
+  },
+  {
+    id: "kirkland",
+    label: "City of Kirkland",
+    color: "#e74c3c",
+    base: "https://services.arcgis.com/FLM8UAw9y5MmuVTV/arcgis/rest/services/Street_Trees/FeatureServer/0",
+    sciField: "BOTANICALN",
+    commonField: "COMMONNAME",
+    condField: "TREECONDIT",
+  },
+  {
+    id: "shoreline",
+    label: "City of Shoreline",
+    color: "#2ecc71",
+    base: "https://services7.arcgis.com/iZIPdzAfqdnP9vrA/arcgis/rest/services/TreeInventory_Public/FeatureServer/0",
+    commonField: "common_name",
+    condField: "CONDITION",
+  },
+  {
+    id: "pierce",
+    label: "Pierce County",
+    color: "#f39c12",
+    base: "https://services.arcgis.com/TosFUe3nXUAksqSj/arcgis/rest/services/Tree_Inventory11/FeatureServer/0",
+    commonField: "Species",
+  },
 ];
 
 export const SCI_ALIASES = [
