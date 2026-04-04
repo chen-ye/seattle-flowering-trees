@@ -58,6 +58,16 @@ export const COMMON_ALIASES = [
   "COMMON",
   "TREE_TYPE",
 ];
+export const SIZE_ALIASES = [
+  "DIAM",
+  "DBH_WL",
+  "DIAMETERATBREASTHEIGHT",
+  "DBH",
+  "DIAMETER",
+  "TREE_DIAM",
+  "TREE_DBH",
+];
+
 export const COND_ALIASES = [
   "CONDITION",
   "CONDITION_",
