@@ -4,6 +4,7 @@ import { COLOR_LABEL, formatSciLabel, COLORS } from "./constants.js";
 class AppUI extends LitElement {
   static properties = {
     currentFilter: { type: String },
+    currentBloomingFilter: { type: String },
     clustered: { type: Boolean },
     sources: { type: Array },
     loadedCount: { type: Number },
@@ -227,6 +228,7 @@ class AppUI extends LitElement {
   constructor() {
     super();
     this.currentFilter = "cherry";
+    this.currentBloomingFilter = "all";
     this.clustered = false;
     this.sources = [];
     this.loadedCount = 0;
@@ -242,6 +244,14 @@ class AppUI extends LitElement {
     this.currentFilter = filter;
     this.dispatchEvent(
       new CustomEvent("filter-changed", { detail: { filter } }),
+    );
+  }
+
+  handleBloomingFilterClick(filter) {
+    if (this.currentBloomingFilter === filter) return;
+    this.currentBloomingFilter = filter;
+    this.dispatchEvent(
+      new CustomEvent("blooming-filter-changed", { detail: { filter } }),
     );
   }
 
@@ -356,6 +366,34 @@ class AppUI extends LitElement {
               All Prunus
             </button>
           </div>
+          <div class="divider"></div>
+          <div class="filter-group" role="group" aria-label="Blooming filter">
+            <button
+              class="filter-btn ${this.currentBloomingFilter === "all" ? "active" : ""}"
+              @click=${() => this.handleBloomingFilterClick("all")}
+            >
+              All Season
+            </button>
+            <button
+              class="filter-btn ${this.currentBloomingFilter === "early" ? "active" : ""}"
+              @click=${() => this.handleBloomingFilterClick("early")}
+            >
+              Early
+            </button>
+            <button
+              class="filter-btn ${this.currentBloomingFilter === "mid" ? "active" : ""}"
+              @click=${() => this.handleBloomingFilterClick("mid")}
+            >
+              Mid
+            </button>
+            <button
+              class="filter-btn ${this.currentBloomingFilter === "late" ? "active" : ""}"
+              @click=${() => this.handleBloomingFilterClick("late")}
+            >
+              Late
+            </button>
+          </div>
+
           <div class="divider"></div>
           <button
             class="filter-btn ${this.clustered ? "active" : ""}"

@@ -13,6 +13,7 @@ import "./components.js";
 let allFeatures = [];
 let clustered = false;
 let currentFilter = "cherry";
+let currentBloomingFilter = "all";
 
 const map = createMap("map");
 const ui = document.querySelector("app-ui");
@@ -25,6 +26,14 @@ ui.addEventListener("filter-changed", (e) => {
   ui.requestUpdate();
 });
 
+
+ui.addEventListener("blooming-filter-changed", (e) => {
+  currentBloomingFilter = e.detail.filter;
+  refreshMapData();
+  applyVisibility(map, currentFilter, clustered);
+  ui.requestUpdate();
+});
+
 ui.addEventListener("cluster-toggled", (e) => {
   clustered = e.detail.clustered;
   applyVisibility(map, currentFilter, clustered);
@@ -32,7 +41,14 @@ ui.addEventListener("cluster-toggled", (e) => {
 });
 
 function refreshMapData() {
-  const cherryFeatures = allFeatures.filter((f) => f.properties._is_cherry);
+  const filteredFeatures = allFeatures.filter((f) => {
+    if (currentBloomingFilter !== "all" && f.properties._blooming !== currentBloomingFilter) {
+      return false;
+    }
+    return true;
+  });
+
+  const cherryFeatures = filteredFeatures.filter((f) => f.properties._is_cherry);
 
   const cherryCreated = addOrUpdateSource(map, "cherry-source", cherryFeatures);
   if (cherryCreated)
@@ -52,6 +68,26 @@ function refreshMapData() {
       map,
       "cherry-raw-source",
       !clustered && currentFilter === "cherry",
+    );
+
+  const allCreated = addOrUpdateSource(map, "all-source", filteredFeatures);
+  if (allCreated)
+    addLayersForSource(
+      map,
+      "all-source",
+      clustered && currentFilter === "all",
+    );
+
+  const allRawCreated = addOrUpdateRawSource(
+    map,
+    "all-raw-source",
+    filteredFeatures,
+  );
+  if (allRawCreated)
+    addRawLayersForSource(
+      map,
+      "all-raw-source",
+      !clustered && currentFilter === "all",
     );
 }
 
@@ -89,21 +125,6 @@ map.on("load", async () => {
 
   await Promise.all(promises);
 
-  const allCreated = addOrUpdateSource(map, "all-source", allFeatures);
-  if (allCreated)
-    addLayersForSource(map, "all-source", clustered && currentFilter === "all");
-
-  const allRawCreated = addOrUpdateRawSource(
-    map,
-    "all-raw-source",
-    allFeatures,
-  );
-  if (allRawCreated)
-    addRawLayersForSource(
-      map,
-      "all-raw-source",
-      !clustered && currentFilter === "all",
-    );
 
   ui.failedCount = failedCount;
   ui.totalCherry = allFeatures.filter((f) => f.properties._is_cherry).length;

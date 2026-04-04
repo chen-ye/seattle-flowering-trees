@@ -254,3 +254,72 @@ export function isFloweringCherry(common, scientific) {
   upperSci = upperSci.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
   return CHERRY_PREFIXES.some((prefix) => upperSci.startsWith(prefix) || upperSci.includes(prefix.replace("PRUNUS ", "")));
 }
+
+
+export const BLOOMING_PERIODS = {
+  "PRUNUS MUME": "early",
+  "PRUNUS CAMPANULATA": "early",
+  "PRUNUS CERASIFERA": "early",
+  "PRUNUS X OKAME": "early",
+  "PRUNUS OKAME": "early",
+  "PRUNUS BLIREIANA": "early",
+  "PRUNUS SUBHIRTELLA": "early",
+  "PRUNUS PENDULA": "early",
+  "PRUNUS DULCIS": "early",
+  "PRUNUS ARMENIACA": "early",
+  "PRUNUS TOMENTOSA": "early",
+
+  "PRUNUS YEDOENSIS": "mid",
+  "PRUNUS X YEDOENSIS": "mid",
+  "PRUNUS ACCOLADE": "mid",
+  "PRUNUS SARGENTII": "mid",
+  "PRUNUS SPECIOSA": "mid",
+  "PRUNUS INCISA": "mid",
+  "PRUNUS NIPPONICA": "mid",
+  "PRUNUS JAMASAKURA": "mid",
+  "PRUNUS PERSICA": "mid",
+  "PRUNUS AVIUM": "mid",
+  "PRUNUS CERASUS": "mid",
+  "PRUNUS TRILOBA": "mid",
+  "PRUNUS AMANOGAWA": "mid",
+  "PRUNUS SPIRE": "mid",
+  "PRUNUS SNOW GOOSE": "mid",
+  "PRUNUS CASCADE SNOW": "mid",
+  "PRUNUS SNOW FOUNTAIN": "mid",
+  "PRUNUS DREAM CATCHER": "mid",
+  "PRUNUS JAPONICA": "mid",
+  "PRUNUS GLANDULOSA": "mid",
+  "PRUNUS JUDDII": "mid",
+  "PRUNUS NEWPORT": "mid",
+  "PRUNUS BENI-TAMANISHIKI": "mid",
+
+  "PRUNUS SERRULATA": "late",
+  "PRUNUS KWANZAN": "late",
+  "PRUNUS SEKIYAMA": "late",
+  "PRUNUS SHIROTAE": "late",
+  "PRUNUS SHIRO-FUGEN": "late",
+  "PRUNUS SHOGETSU": "late",
+  "PRUNUS SEROTINA": "late",
+  "PRUNUS VIRGINIANA": "late",
+  "PRUNUS PADUS": "late",
+  "PRUNUS EMARGINATA": "late",
+  "PRUNUS LAUROCERASUS": "late"
+};
+
+export const BLOOMING_KEYS = Object.keys(BLOOMING_PERIODS).sort(
+  (a, b) => b.length - a.length,
+);
+
+export function getBloomingPeriod(scientific) {
+  if (!scientific) return null;
+  let upper = scientific.trim().toUpperCase().replace(/\s+/g, " ").replace(/[`'"]/g, "");
+  upper = upper.replace(/^PRUNUS X /, "PRUNUS ");
+  upper = upper.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
+
+  for (const prefix of BLOOMING_KEYS) {
+    if (upper.startsWith(prefix) || upper.includes(prefix.replace("PRUNUS ", ""))) {
+      return BLOOMING_PERIODS[prefix];
+    }
+  }
+  return null;
+}
