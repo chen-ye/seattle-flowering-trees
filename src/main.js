@@ -99,6 +99,30 @@ function refreshMapData() {
 }
 
 map.on("load", async () => {
+
+  map.addSource("terrain", {
+    type: "raster-dem",
+    tiles: [
+      "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+    ],
+    encoding: "terrarium",
+    tileSize: 256,
+    maxzoom: 14,
+  });
+  map.addLayer(
+    {
+      id: "hillshade",
+      type: "hillshade",
+      source: "terrain",
+      paint: {
+        "hillshade-exaggeration": 0.5,
+        "hillshade-shadow-color": "#473B24",
+        "hillshade-highlight-color": "#FFFFFF",
+        "hillshade-accent-color": "#5a5a5a",
+      },
+    },
+  );
+
   let loadedCount = 0;
   let failedCount = 0;
 
