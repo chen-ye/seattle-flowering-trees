@@ -1,11 +1,3 @@
-
-const warnedMessages = new Set();
-function warnOnce(msg) {
-  if (!warnedMessages.has(msg)) {
-    console.warn(msg);
-    warnedMessages.add(msg);
-  }
-}
 export const SOURCES = [
   {
     id: "bellevue",
@@ -51,18 +43,6 @@ export const SOURCES = [
     label: "SPR Food Systems",
     color: "#e67e22",
     base: "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Urban_Food_Systems_Fruit_Trees_Current/FeatureServer/0",
-    sciField: "GENUS",
-    commonField: "TREETYPE",
-    extraFields: ["SPECIES"],
-    parseSpecies: (p) => {
-      const genus = (p.GENUS || "").trim();
-      const species = (p.SPECIES || "").trim();
-      let sci = genus;
-      if (species && species !== "null") {
-        sci = species.toLowerCase().startsWith(genus.toLowerCase()) ? species : genus + " " + species;
-      }
-      return { sci: sci.trim(), com: p.TREETYPE || "unknown" };
-    }
   },
   {
     id: "arboretum",
@@ -95,11 +75,11 @@ export const SOURCES = [
     id: "shoreline",
     label: "City of Shoreline",
     color: "#2ecc71",
-    base: "https://gis.shorelinewa.gov/server/rest/services/BaseLayers/Trees/MapServer/0",
-    commonField: "Common_Nm",
-    sciField: "Scientific_Nm",
-    condField: "ConditionRating",
-    sizeField: "DBH1",
+    base: "https://services7.arcgis.com/iZIPdzAfqdnP9vrA/arcgis/rest/services/TreeInventory_Public/FeatureServer/0",
+    commonField: "common_name",
+    sciField: "Genus",
+    condField: "CONDITION",
+    sizeField: "DBH",
   },
   {
     id: "pierce",
@@ -119,44 +99,9 @@ export const SOURCES = [
     },
     sizeField: "DBH__in_",
   },
-  {
-    id: "auburn",
-    label: "Auburn Tree Inventory",
-    color: "#f39c12",
-    sciField: "GENUS",
-    commonField: "NAME",
-  },
-  {
-    id: "renton",
-    label: "Renton Tree Sites",
-    color: "#16a085",
-    combinedField: "Tree Species",
-  },
-      {
-    id: "sammamish_public",
-    label: "Sammamish Public Tree Inventory",
-    color: "#8e44ad",
-    sciField: "Genus",
-    commonField: "Species",
-    parseSpecies: (p) => {
-      const sci = ((p.Genus || "") + " " + (p.Species || "")).trim();
-      return { sci, com: sci };
-    }
-  },
-      {
-    id: "sammamish_row",
-    label: "Sammamish ROW Tree Study",
-    color: "#2c3e50",
-    sciField: "Genus",
-    commonField: "Species",
-    parseSpecies: (p) => {
-      const sci = ((p.Genus || "") + " " + (p.Species || "")).trim();
-      return { sci, com: sci };
-    }
-  },
 ];
+
 export const SCI_ALIASES = [
-  "FAMILY",
   "SCIENTIFIC_NAME",
   "BOTANICAL_NAME",
   "SCI_NAME",
@@ -190,6 +135,7 @@ export const SIZE_ALIASES = [
   "TREE_DBH",
   "TREEDIAMETER_IN",
 ];
+
 export const COND_ALIASES = [
   "CONDITION",
   "CONDITION_",
@@ -197,12 +143,14 @@ export const COND_ALIASES = [
   "COND",
   "RATING",
 ];
+
 export const COLORS = {
   single: "#e8436a",
   small: "#f28cb1",
   medium: "#d63579",
   large: "#a0195a",
 };
+
 export const FLOWER_COLORS = {
   "PRUNUS X YEDOENSIS": "#f4c8dc",
   "PRUNUS YEDOENSIS": "#f4c8dc",
@@ -263,28 +211,8 @@ export const FLOWER_COLORS = {
   "PRUNUS PUGETENSIS": "#f8f0f4",
   "PRUNUS BLIREANA": "#e8628c",
   "PRUNUS YEDEOENSIS": "#f4c8dc",
-  "PRUNUS YEODENSIS": "#f4c8dc",
-  "PRUNUS AMYGDALUS": "#f8d8e8",
-  "PRUNUS BILREIANA": "#e8628c",
-  "PRUNUS CERRASIFERA": "#d8a0d8",
-  "PRUNUS HOKUSAI": "#f4c8dc",
-  "PRUNUS CORNUTA": "#f8f8f8",
-  "PRUNUS SATO-ZAKURA": "#e8628c",
-  "PRUNUS INCAM": "#e8436a",
-  "PRUNUS CHOSHU-HIZAKURA": "#e8628c",
-  "PRUNUS OSHOKUN": "#f4c8dc",
-  "PRUNUS UKON": "#f8f0f4",
-  "PRUNUS MUGUS": "#e8628c",
-  "PRUNUS SIEBOLDII": "#f0a0c0",
-  "PRUNUS OJOCHIN": "#f8f0f4",
-  "PRUNUS VERECUNDA": "#f8f0f4",
-  "PRUNUS BRIGANTINA": "#f8f8f8",
-  "PRUNUS HUMILIS": "#f8f0f4",
-  "PRUNUS MICROCARPA": "#f0a0c0",
-  "PRUNUS DIELSIANA": "#f0a0c0",
-  "PRUNUS MAACKII": "#f8f8f8",
-  "PRUNUS ROYAL BURGUNDY": "#d63579",
 };
+
 export const SPECIES_LABELS = {
   "PRUNUS X YEDOENSIS": "Yoshino Cherry",
   "PRUNUS YEDOENSIS": "Yoshino Cherry",
@@ -342,50 +270,35 @@ export const SPECIES_LABELS = {
   "PRUNUS BLIREANA": "Blireiana Plum",
   "PRUNUS PUGETENSIS": "Puget Sound Cherry",
   "PRUNUS YEDEOENSIS": "Yoshino Cherry",
-  "PRUNUS AMYGDALUS": "Almond",
-  "PRUNUS BILREIANA": "Blireiana Plum",
-  "PRUNUS CERRASIFERA": "Cherry Plum",
-  "PRUNUS HOKUSAI": "Hokusai Cherry",
-  "PRUNUS CORNUTA": "Himalayan Bird Cherry",
-  "PRUNUS SATO-ZAKURA": "Japanese Cherry",
-  "PRUNUS INCAM": "Okame Cherry",
-  "PRUNUS CHOSHU-HIZAKURA": "Choshu-hizakura Cherry",
-  "PRUNUS OSHOKUN": "Oshokun Cherry",
-  "PRUNUS UKON": "Ukon Cherry",
-  "PRUNUS MUGUS": "Mugus Cherry",
-  "PRUNUS SIEBOLDII": "Siebold's Cherry",
-  "PRUNUS OJOCHIN": "Ojochin Cherry",
-  "PRUNUS VERECUNDA": "Korean Hill Cherry",
-  "PRUNUS BRIGANTINA": "Briançon Apricot",
-  "PRUNUS HUMILIS": "Chinese Plum",
-  "PRUNUS MICROCARPA": "Microcarpa Cherry",
-  "PRUNUS DIELSIANA": "Diels Cherry",
-  "PRUNUS MAACKII": "Amur Chokecherry",
-  "PRUNUS ROYAL BURGUNDY": "Royal Burgundy Cherry",
 };
+
 export const COLOR_LABEL = {};
 for (const [prefix, color] of Object.entries(FLOWER_COLORS)) {
   if (!COLOR_LABEL[color] && SPECIES_LABELS[prefix])
     COLOR_LABEL[color] = SPECIES_LABELS[prefix];
 }
+
 export const FLOWER_COLOR_KEYS = Object.keys(FLOWER_COLORS).sort(
   (a, b) => b.length - a.length,
 );
+
 export function getFlowerColor(scientific) {
   if (!scientific) return null;
   let upper = scientific.trim().toUpperCase().replace(/\s+/g, " ").replace(/[`'"]/g, "");
   upper = upper.replace(/^PRUNUS X /, "PRUNUS ");
   upper = upper.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
+
   for (const prefix of FLOWER_COLOR_KEYS) {
     if (upper.startsWith(prefix) || upper.includes(prefix.replace("PRUNUS ", ""))) {
       return FLOWER_COLORS[prefix];
     }
   }
-  if (upper.startsWith("PRUNUS") && upper !== "PRUNUS" && upper !== "PRUNUS SP" && upper !== "PRUNUS SP." && upper !== "PRUNUS SPECIES") {
-    warnOnce(`[getFlowerColor] Unmatched Prunus variety: ${scientific}`);
+  if (upper.startsWith("PRUNUS") && upper !== "PRUNUS" && upper !== "PRUNUS SP") {
+    console.warn(`[getFlowerColor] Unmatched Prunus variety: ${scientific}`);
   }
   return null;
 }
+
 export function formatSciLabel(sci) {
   if (!sci) return "Other Prunus";
   let clean = sci.trim().replace(/[`'"]/g, "").replace(/\s+/g, " ");
@@ -393,10 +306,13 @@ export function formatSciLabel(sci) {
   const parts = clean.split(" ");
   return parts.length >= 2 ? `P. ${parts[1].toLowerCase()}` : sci;
 }
+
 export function isFloweringCherry(common, scientific) {
   const cn = common.toUpperCase();
   const sci = scientific.toUpperCase();
+
   if (cn.includes("CHERRY") && !cn.includes("LAUREL")) return true;
+
   const CHERRY_PREFIXES = [
     "PRUNUS SERRULATA",
     "PRUNUS YEDOENSIS",
@@ -427,68 +343,19 @@ export function isFloweringCherry(common, scientific) {
     "PRUNUS JUDDII",
     "PRUNUS YEDEOENSIS",
     "PRUNUS PUGETENSIS",
-
-    "PRUNUS HOKUSAI",
-    "PRUNUS CORNUTA",
-    "PRUNUS SATO-ZAKURA",
-    "PRUNUS INCAM",
-    "PRUNUS CHOSHU-HIZAKURA",
-    "PRUNUS OSHOKUN",
-    "PRUNUS UKON",
-    "PRUNUS MUGUS",
-    "PRUNUS SIEBOLDII",
-    "PRUNUS OJOCHIN",
-    "PRUNUS VERECUNDA",
-    "PRUNUS MICROCARPA",
-    "PRUNUS DIELSIANA",
-    "PRUNUS MAACKII",
-    "PRUNUS ROYAL BURGUNDY",
-    "PRUNUS AVIUM",
-    "PRUNUS CERASUS",
-    "PRUNUS SEROTINA",
-    "PRUNUS VIRGINIANA",
-    "PRUNUS PADUS",
-    "PRUNUS EMARGINATA",
-    "PRUNUS TOMENTOSA",
-    "PRUNUS JAPONICA",
-    "PRUNUS YEODENSIS",
   ];
   let upperSci = sci.replace(/\s+/g, " ").replace(/[`'"]/g, "");
   upperSci = upperSci.replace(/^PRUNUS X /, "PRUNUS ");
   upperSci = upperSci.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
   const matched = CHERRY_PREFIXES.some((prefix) => upperSci.startsWith(prefix) || upperSci.includes(prefix.replace("PRUNUS ", "")));
-  const NON_CHERRY_PRUNUS = [
-    "PRUNUS LAUROCERASUS",
-    "PRUNUS LUSITANICA",
-    "PRUNUS ARMENIACA",
-    "PRUNUS DOMESTICA",
-    "PRUNUS CERASIFERA",
-    "PRUNUS PERSICA",
-    "PRUNUS CAROLINIANA",
-    "PRUNUS DULCIS",
-    "PRUNUS AMYGDALUS",
-    "PRUNUS BLIREIANA",
-    "PRUNUS BLIREANA",
-    "PRUNUS BILREIANA",
-    "PRUNUS AMERICANA",
-    "PRUNUS SALICINA",
-    "PRUNUS CERRASIFERA",
-    "PRUNUS GLANDULOSA",
-    "PRUNUS BRIGANTINA",
-    "PRUNUS HUMILIS",
-    "PRUNUS TRILOBA",
-    "PRUNUS ILICIFOLIA",
-    "PRUNUS NEWPORT",
-    "PRUNUS SUBCORDATA"
-  ];
-  if (!matched && upperSci.startsWith("PRUNUS") && upperSci !== "PRUNUS" && upperSci !== "PRUNUS SP" && upperSci !== "PRUNUS SP." && upperSci !== "PRUNUS SPECIES") {
-    const isKnownNonCherry = NON_CHERRY_PRUNUS.some((prefix) => upperSci.startsWith(prefix) || upperSci.includes(prefix.replace("PRUNUS ", "")));
-    if (!isKnownNonCherry) {
-      warnOnce(`[isFloweringCherry] Prunus variety not in CHERRY_PREFIXES (might be correct if not a cherry): ${scientific}`);
-    }
+  if (!matched && upperSci.startsWith("PRUNUS") && upperSci !== "PRUNUS" && upperSci !== "PRUNUS SP") {
+    // Some are genuinely not flowering cherries (e.g. laurels, plums), but log anyway to catch misses
+    console.warn(`[isFloweringCherry] Prunus variety not in CHERRY_PREFIXES (might be correct if not a cherry): ${scientific}`);
   }
   return matched;
 }
+
+
 export const BLOOMING_PERIODS = {
   "PRUNUS MUME": "early",
   "PRUNUS CAMPANULATA": "early",
@@ -504,6 +371,7 @@ export const BLOOMING_PERIODS = {
   "PRUNUS CAROLINIANA": "early",
   "PRUNUS SALICINA": "early",
   "PRUNUS BLIREANA": "early",
+
   "PRUNUS YEDOENSIS": "mid",
   "PRUNUS X YEDOENSIS": "mid",
   "PRUNUS ACCOLADE": "mid",
@@ -532,6 +400,7 @@ export const BLOOMING_PERIODS = {
   "PRUNUS DOMESTICA": "mid",
   "PRUNUS PUGETENSIS": "mid",
   "PRUNUS YEDEOENSIS": "mid",
+
   "PRUNUS SERRULATA": "late",
   "PRUNUS KWANZAN": "late",
   "PRUNUS SEKIYAMA": "late",
@@ -544,45 +413,26 @@ export const BLOOMING_PERIODS = {
   "PRUNUS EMARGINATA": "late",
   "PRUNUS LAUROCERASUS": "late",
   "PRUNUS ILICIFOLIA": "late",
-  "PRUNUS LUSITANICA": "late",
-  "PRUNUS AMYGDALUS": "early",
-  "PRUNUS BILREIANA": "early",
-  "PRUNUS CERRASIFERA": "early",
-  "PRUNUS HOKUSAI": "mid",
-  "PRUNUS CORNUTA": "mid",
-  "PRUNUS SATO-ZAKURA": "mid",
-  "PRUNUS INCAM": "early",
-  "PRUNUS CHOSHU-HIZAKURA": "mid",
-  "PRUNUS OSHOKUN": "mid",
-  "PRUNUS UKON": "mid",
-  "PRUNUS MUGUS": "mid",
-  "PRUNUS SIEBOLDII": "mid",
-  "PRUNUS OJOCHIN": "mid",
-  "PRUNUS VERECUNDA": "mid",
-  "PRUNUS BRIGANTINA": "early",
-  "PRUNUS HUMILIS": "early",
-  "PRUNUS MICROCARPA": "early",
-  "PRUNUS DIELSIANA": "early",
-  "PRUNUS MAACKII": "mid",
-  "PRUNUS ROYAL BURGUNDY": "mid",
-  "PRUNUS SUBCORDATA": "early",
-  "PRUNUS YEODENSIS": "mid",
+  "PRUNUS LUSITANICA": "late"
 };
+
 export const BLOOMING_KEYS = Object.keys(BLOOMING_PERIODS).sort(
   (a, b) => b.length - a.length,
 );
+
 export function getBloomingPeriod(scientific) {
   if (!scientific) return null;
   let upper = scientific.trim().toUpperCase().replace(/\s+/g, " ").replace(/[`'"]/g, "");
   upper = upper.replace(/^PRUNUS X /, "PRUNUS ");
   upper = upper.replace(/SHIRO -FUGEN/, "SHIRO-FUGEN");
+
   for (const prefix of BLOOMING_KEYS) {
     if (upper.startsWith(prefix) || upper.includes(prefix.replace("PRUNUS ", ""))) {
       return BLOOMING_PERIODS[prefix];
     }
   }
-  if (upper.startsWith("PRUNUS") && upper !== "PRUNUS" && upper !== "PRUNUS SP" && upper !== "PRUNUS SP." && upper !== "PRUNUS SPECIES") {
-    warnOnce(`[getBloomingPeriod] Unmatched Prunus variety: ${scientific}`);
+  if (upper.startsWith("PRUNUS") && upper !== "PRUNUS" && upper !== "PRUNUS SP") {
+    console.warn(`[getBloomingPeriod] Unmatched Prunus variety: ${scientific}`);
   }
   return null;
 }
