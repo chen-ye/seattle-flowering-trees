@@ -85,7 +85,7 @@ export async function fetchSourceData(source) {
   const where = whereParts.join(" AND ");
 
   const outFields =
-    [source.combinedField, source.sciField, source.commonField, source.condField, source.sizeField]
+    [source.combinedField, source.sciField, source.commonField, source.condField, source.sizeField, ...(source.extraFields || [])]
       .filter(Boolean)
       .join(",") || "*";
 
