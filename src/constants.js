@@ -51,6 +51,18 @@ export const SOURCES = [
     label: "SPR Food Systems",
     color: "#e67e22",
     base: "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Urban_Food_Systems_Fruit_Trees_Current/FeatureServer/0",
+    sciField: "GENUS",
+    commonField: "TREETYPE",
+    extraFields: ["SPECIES"],
+    parseSpecies: (p) => {
+      const genus = (p.GENUS || "").trim();
+      const species = (p.SPECIES || "").trim();
+      let sci = genus;
+      if (species && species !== "null") {
+        sci = species.toLowerCase().startsWith(genus.toLowerCase()) ? species : genus + " " + species;
+      }
+      return { sci: sci.trim(), com: p.TREETYPE || "unknown" };
+    }
   },
   {
     id: "arboretum",
