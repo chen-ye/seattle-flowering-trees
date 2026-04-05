@@ -154,7 +154,6 @@ export const SOURCES = [
       return { sci, com: sci };
     }
   },
-  },
   {
     id: "curated",
     label: "Curated Blossoms",
