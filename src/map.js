@@ -1,12 +1,27 @@
 import { COLORS } from "./constants.js";
 
 export function createMap(containerId) {
+  let initialCenter = [-122.335, 47.608];
+  let initialZoom = 11;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const zoomParam = urlParams.get('zoom');
+  const lngParam = urlParams.get('lng');
+  const latParam = urlParams.get('lat');
+
+  if (zoomParam && !isNaN(parseFloat(zoomParam))) {
+    initialZoom = parseFloat(zoomParam);
+  }
+  if (lngParam && latParam && !isNaN(parseFloat(lngParam)) && !isNaN(parseFloat(latParam))) {
+    initialCenter = [parseFloat(lngParam), parseFloat(latParam)];
+  }
+
   const map = new maplibregl.Map({
     container: containerId,
     style:
       "https://api.protomaps.com/styles/v5/white/en.json?key=e719bed843250125",
-    center: [-122.335, 47.608],
-    zoom: 11,
+    center: initialCenter,
+    zoom: initialZoom,
     minZoom: 9,
     maxZoom: 19,
   });
@@ -16,6 +31,17 @@ export function createMap(containerId) {
     new maplibregl.ScaleControl({ unit: "imperial" }),
     "bottom-left",
   );
+
+  map.on("moveend", () => {
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+    const params = new URLSearchParams(window.location.search);
+    params.set('lng', center.lng.toFixed(5));
+    params.set('lat', center.lat.toFixed(5));
+    params.set('zoom', zoom.toFixed(2));
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState(null, '', newUrl);
+  });
 
   return map;
 }
