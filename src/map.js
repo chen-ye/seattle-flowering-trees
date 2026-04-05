@@ -31,6 +31,13 @@ export function createMap(containerId) {
     new maplibregl.ScaleControl({ unit: "imperial" }),
     "bottom-left",
   );
+  map.addControl(
+    new maplibregl.GeolocateControl({
+      positionOptions: { enableHighAccuracy: true },
+      trackUserLocation: true,
+    }),
+    "bottom-left"
+  );
 
   map.on("moveend", () => {
     const center = map.getCenter();
