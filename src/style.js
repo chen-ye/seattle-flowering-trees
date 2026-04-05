@@ -14,7 +14,7 @@ export const style = {
   sources: {
     [SOURCE]: {
       type: "vector",
-      url: `https://api.protomaps.com/tiles/v4.json?key=${PROTOMAPS_KEY}`,
+      url: `pmtiles://https://api.protomaps.com/tiles/v4.pmtiles?key=${PROTOMAPS_KEY}`,
       attribution:
         '<a href="https://protomaps.com">Protomaps</a> | <a href="https://openstreetmap.org">OSM</a>',
     },
