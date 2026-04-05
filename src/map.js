@@ -131,7 +131,7 @@ export function addLayersForSource(map, sourceId, visible) {
     id: `${prefix}-points`,
     type: "circle",
     source: sourceId,
-    filter: ["!", ["has", "point_count"]],
+    filter: ["all", ["!", ["has", "point_count"]], ["!=", ["get", "_source"], "Curated Blossoms"]],
     layout: { visibility: v },
     paint: {
       "circle-color": ["coalesce", ["get", "_flower_color"], COLORS.single],
@@ -164,6 +164,26 @@ export function addLayersForSource(map, sourceId, visible) {
     },
   });
 
+  map.addLayer({
+    id: `${prefix}-curated-points`,
+    type: "symbol",
+    source: sourceId,
+    filter: ["all", ["!", ["has", "point_count"]], ["==", ["get", "_source"], "Curated Blossoms"]],
+    layout: {
+      visibility: v,
+      "text-field": "🌸",
+      "text-size": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        10, 14,
+        14, 20,
+        19, 36
+      ],
+      "text-allow-overlap": true
+    }
+  });
+
   map.on("click", `${prefix}-clusters`, (e) => {
     const f = map.queryRenderedFeatures(e.point, {
       layers: [`${prefix}-clusters`],
@@ -176,7 +196,7 @@ export function addLayersForSource(map, sourceId, visible) {
       });
   });
 
-  map.on("click", `${prefix}-points`, (e) => {
+  const onPointClick = (e) => {
     const f = e.features[0];
     const p = f.properties;
     const coords = f.geometry.coordinates.slice();
@@ -200,7 +220,10 @@ export function addLayersForSource(map, sourceId, visible) {
       .setLngLat(coords)
       .setHTML(nameHtml + sciHtml + condHtml + sizeHtml + srcHtml)
       .addTo(map);
-  });
+  };
+
+  map.on("click", `${prefix}-points`, onPointClick);
+  map.on("click", `${prefix}-curated-points`, onPointClick);
 
   map.on("mouseenter", `${prefix}-clusters`, () => {
     map.getCanvas().style.cursor = "pointer";
@@ -214,6 +237,12 @@ export function addLayersForSource(map, sourceId, visible) {
   map.on("mouseleave", `${prefix}-points`, () => {
     map.getCanvas().style.cursor = "";
   });
+  map.on("mouseenter", `${prefix}-curated-points`, () => {
+    map.getCanvas().style.cursor = "pointer";
+  });
+  map.on("mouseleave", `${prefix}-curated-points`, () => {
+    map.getCanvas().style.cursor = "";
+  });
 }
 
 export function addRawLayersForSource(map, sourceId, visible) {
@@ -225,6 +254,7 @@ export function addRawLayersForSource(map, sourceId, visible) {
     id: layerId,
     type: "circle",
     source: sourceId,
+    filter: ["!=", ["get", "_source"], "Curated Blossoms"],
     layout: { visibility: v },
     paint: {
       "circle-color": ["coalesce", ["get", "_flower_color"], COLORS.single],
@@ -257,7 +287,28 @@ export function addRawLayersForSource(map, sourceId, visible) {
     },
   });
 
-  map.on("click", layerId, (e) => {
+  const curatedLayerId = `${prefix}-curated-points`;
+  map.addLayer({
+    id: curatedLayerId,
+    type: "symbol",
+    source: sourceId,
+    filter: ["==", ["get", "_source"], "Curated Blossoms"],
+    layout: {
+      visibility: v,
+      "text-field": "🌸",
+      "text-size": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        10, 14,
+        14, 20,
+        19, 36
+      ],
+      "text-allow-overlap": true
+    }
+  });
+
+  const onRawPointClick = (e) => {
     const f = e.features[0];
     const p = f.properties;
     const coords = f.geometry.coordinates.slice();
@@ -280,22 +331,31 @@ export function addRawLayersForSource(map, sourceId, visible) {
       .setLngLat(coords)
       .setHTML(nameHtml + sciHtml + condHtml + sizeHtml + srcHtml)
       .addTo(map);
-  });
-  map.on("mouseenter", layerId, () => {
+  };
+
+  map.on("click", layerId, onRawPointClick);
+  map.on("click", curatedLayerId, onRawPointClick);
+
+  const onRawPointEnter = () => {
     map.getCanvas().style.cursor = "pointer";
-  });
-  map.on("mouseleave", layerId, () => {
+  };
+  const onRawPointLeave = () => {
     map.getCanvas().style.cursor = "";
-  });
+  };
+
+  map.on("mouseenter", layerId, onRawPointEnter);
+  map.on("mouseleave", layerId, onRawPointLeave);
+  map.on("mouseenter", curatedLayerId, onRawPointEnter);
+  map.on("mouseleave", curatedLayerId, onRawPointLeave);
 }
 
 export function applyVisibility(map, currentFilter, clustered) {
   const active = clustered ? currentFilter : `${currentFilter}-raw`;
   const LAYER_GROUPS = {
-    cherry: ["cherry-clusters", "cherry-cluster-count", "cherry-points"],
-    all: ["all-clusters", "all-cluster-count", "all-points"],
-    "cherry-raw": ["cherry-raw-points"],
-    "all-raw": ["all-raw-points"],
+    cherry: ["cherry-clusters", "cherry-cluster-count", "cherry-points", "cherry-curated-points"],
+    all: ["all-clusters", "all-cluster-count", "all-points", "all-curated-points"],
+    "cherry-raw": ["cherry-raw-points", "cherry-raw-curated-points"],
+    "all-raw": ["all-raw-points", "all-raw-curated-points"],
   };
 
   Object.entries(LAYER_GROUPS).forEach(([key, layers]) => {
