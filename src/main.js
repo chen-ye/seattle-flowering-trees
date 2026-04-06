@@ -2,8 +2,8 @@ import { SOURCES } from "./constants.js";
 import { fetchSourceData } from "./data.js";
 import {
   createMap,
-  addOrUpdateRawSource,
-  addRawLayersForSource,
+  addOrUpdateSource,
+  addLayersForSource,
   applyVisibility,
 } from "./map.js";
 import "./components.js";
@@ -48,14 +48,14 @@ function refreshMapData() {
 
   const cherryFeatures = filteredFeatures.filter((f) => f.properties._is_cherry);
 
-  const cherryCreated = addOrUpdateRawSource(map, "cherry-source", cherryFeatures);
+  const cherryCreated = addOrUpdateSource(map, "cherry-source", cherryFeatures);
   if (cherryCreated) {
-    addRawLayersForSource(map, "cherry-source", currentFilter === "cherry");
+    addLayersForSource(map, "cherry-source", currentFilter === "cherry");
   }
 
-  const allCreated = addOrUpdateRawSource(map, "all-source", filteredFeatures);
+  const allCreated = addOrUpdateSource(map, "all-source", filteredFeatures);
   if (allCreated) {
-    addRawLayersForSource(map, "all-source", currentFilter === "all");
+    addLayersForSource(map, "all-source", currentFilter === "all");
   }
 }
 
