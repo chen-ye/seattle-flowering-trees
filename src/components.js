@@ -188,16 +188,6 @@ class AppUI extends LitElement {
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .legend-cluster {
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8px;
-      color: white;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
     .legend-section-label {
       font-size: 10px;
       font-weight: 600;
@@ -211,7 +201,6 @@ class AppUI extends LitElement {
     super();
     this.currentFilter = "cherry";
     this.currentBloomingFilters = ["early", "mid", "late"];
-    this.clustered = false;
     this.sources = [];
     this.loadedCount = 0;
     this.failedCount = 0;
@@ -244,15 +233,6 @@ class AppUI extends LitElement {
     );
   }
 
-  handleClusterToggle() {
-    this.clustered = !this.clustered;
-    this.dispatchEvent(
-      new CustomEvent("cluster-toggled", {
-        detail: { clustered: this.clustered },
-      }),
-    );
-  }
-
   renderLegend() {
     const activeFeatures =
       this.currentFilter === "cherry"
@@ -280,25 +260,6 @@ class AppUI extends LitElement {
     return html`
       <div id="legend">
 
-        <div class="legend-section-label">Cluster size</div>
-        <div class="legend-row">
-          <div
-            class="legend-cluster"
-            style="background:#d63579;width:16px;height:16px"
-          >
-            50
-          </div>
-          <span>50–200 trees</span>
-        </div>
-        <div class="legend-row">
-          <div
-            class="legend-cluster"
-            style="background:#a0195a;width:22px;height:22px"
-          >
-            200
-          </div>
-          <span>200+ trees</span>
-        </div>
         ${species.length > 0
           ? html`
               <div class="legend-section-label">Flower color</div>
@@ -391,14 +352,6 @@ class AppUI extends LitElement {
             </button>
           </div>
 
-          <div class="divider"></div>
-          <button
-            class="filter-btn ${this.clustered ? "active" : ""}"
-            title="Toggle clustering"
-            @click=${this.handleClusterToggle}
-          >
-            Clusters
-          </button>
         </div>
 
         <div id="status" class="${this.statusHidden ? "hidden" : ""}">
