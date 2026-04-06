@@ -1,3 +1,4 @@
+import { FLOWER_SVG } from "./svg.js";
 import { COLORS } from "./constants.js";
 
 export function createMap(containerId) {
@@ -164,6 +165,7 @@ export function applyVisibility(map, currentFilter) {
   });
 }
 
+
 export function addCuratedLayer(map, curatedLocations) {
   const sourceId = "curated-source";
   const layerId = "curated-points";
@@ -188,44 +190,59 @@ export function addCuratedLayer(map, curatedLocations) {
     });
   }
 
-  if (!map.getLayer(layerId)) {
-    map.addLayer({
-      id: layerId,
-      type: "symbol",
-      source: sourceId,
-      layout: {
-        "text-field": "🌸",
-        "text-size": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          10, 14,
-          14, 20,
-          19, 36
-        ],
-        "text-allow-overlap": true
+  if (!map.hasImage('flower-icon')) {
+    const img = new Image(24, 24);
+    img.onload = () => {
+      if (!map.hasImage('flower-icon')) {
+        map.addImage('flower-icon', img);
       }
-    });
+      addLayer();
+    };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(FLOWER_SVG);
+  } else {
+    addLayer();
+  }
 
-    map.on("click", layerId, (e) => {
-      const f = e.features[0];
-      const p = f.properties;
-      const coords = f.geometry.coordinates.slice();
+  function addLayer() {
+    if (!map.getLayer(layerId)) {
+      map.addLayer({
+        id: layerId,
+        type: "symbol",
+        source: sourceId,
+        layout: {
+          "icon-image": "flower-icon",
+          "icon-size": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            10, 0.5,
+            14, 1,
+            19, 1.5
+          ],
+          "icon-allow-overlap": true
+        }
+      });
 
-      const nameHtml = p._name ? `<div class="popup-name">${p._name}</div>` : "";
-      const typeHtml = p._type ? `<div class="popup-cond">Type: ${p._type}</div>` : "";
+      map.on("click", layerId, (e) => {
+        const f = e.features[0];
+        const p = f.properties;
+        const coords = f.geometry.coordinates.slice();
 
-      new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
-        .setLngLat(coords)
-        .setHTML(nameHtml + typeHtml)
-        .addTo(map);
-    });
+        const nameHtml = p._name ? `<div class="popup-name">${p._name}</div>` : "";
+        const typeHtml = p._type ? `<div class="popup-cond">Type: ${p._type}</div>` : "";
 
-    map.on("mouseenter", layerId, () => {
-      map.getCanvas().style.cursor = "pointer";
-    });
-    map.on("mouseleave", layerId, () => {
-      map.getCanvas().style.cursor = "";
-    });
+        new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
+          .setLngLat(coords)
+          .setHTML(nameHtml + typeHtml)
+          .addTo(map);
+      });
+
+      map.on("mouseenter", layerId, () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", layerId, () => {
+        map.getCanvas().style.cursor = "";
+      });
+    }
   }
 }
