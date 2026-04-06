@@ -154,12 +154,6 @@ export const SOURCES = [
       return { sci, com: sci };
     }
   },
-  {
-    id: "curated",
-    label: "Curated Blossoms",
-    color: "#ff69b4",
-    type: "static"
-  }
 ];
 export const SCI_ALIASES = [
   "FAMILY",

@@ -5,7 +5,9 @@ import {
   addOrUpdateSource,
   addLayersForSource,
   applyVisibility,
+  addCuratedLayer,
 } from "./map.js";
+import { CURATED_LOCATIONS } from "./curated_data.js";
 import "./components.js";
 
 let allFeatures = [];
@@ -70,6 +72,7 @@ map.on("load", async () => {
     tileSize: 256,
     maxzoom: 14,
   });
+
   map.addLayer(
     {
       id: "hillshade",
@@ -83,6 +86,9 @@ map.on("load", async () => {
       },
     },
   );
+
+  addCuratedLayer(map, CURATED_LOCATIONS);
+
 
   let loadedCount = 0;
   let failedCount = 0;

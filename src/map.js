@@ -79,7 +79,6 @@ export function addLayersForSource(map, sourceId, visible) {
     id: layerId,
     type: "circle",
     source: sourceId,
-    filter: ["!=", ["get", "_source"], "Curated Blossoms"],
     layout: { visibility: v },
     paint: {
       "circle-color": ["coalesce", ["get", "_flower_color"], COLORS.single],
@@ -112,26 +111,6 @@ export function addLayersForSource(map, sourceId, visible) {
     },
   });
 
-  const curatedLayerId = `${prefix}-curated-points`;
-  map.addLayer({
-    id: curatedLayerId,
-    type: "symbol",
-    source: sourceId,
-    filter: ["==", ["get", "_source"], "Curated Blossoms"],
-    layout: {
-      visibility: v,
-      "text-field": "🌸",
-      "text-size": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        10, 14,
-        14, 20,
-        19, 36
-      ],
-      "text-allow-overlap": true
-    }
-  });
 
   const onRawPointClick = (e) => {
     const f = e.features[0];
@@ -159,7 +138,6 @@ export function addLayersForSource(map, sourceId, visible) {
   };
 
   map.on("click", layerId, onRawPointClick);
-  map.on("click", curatedLayerId, onRawPointClick);
 
   const onRawPointEnter = () => {
     map.getCanvas().style.cursor = "pointer";
@@ -170,14 +148,12 @@ export function addLayersForSource(map, sourceId, visible) {
 
   map.on("mouseenter", layerId, onRawPointEnter);
   map.on("mouseleave", layerId, onRawPointLeave);
-  map.on("mouseenter", curatedLayerId, onRawPointEnter);
-  map.on("mouseleave", curatedLayerId, onRawPointLeave);
 }
 
 export function applyVisibility(map, currentFilter) {
   const LAYER_GROUPS = {
-    cherry: ["cherry-points", "cherry-curated-points"],
-    all: ["all-points", "all-curated-points"],
+    cherry: ["cherry-points"],
+    all: ["all-points"],
   };
 
   Object.entries(LAYER_GROUPS).forEach(([key, layers]) => {
@@ -186,4 +162,70 @@ export function applyVisibility(map, currentFilter) {
       if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", vis);
     });
   });
+}
+
+export function addCuratedLayer(map, curatedLocations) {
+  const sourceId = "curated-source";
+  const layerId = "curated-points";
+
+  const features = curatedLocations.map(loc => {
+    return {
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [loc.lon, loc.lat] },
+      properties: {
+        _name: loc.address,
+        _type: loc.type,
+      }
+    };
+  });
+
+  if (map.getSource(sourceId)) {
+    map.getSource(sourceId).setData(geojson(features));
+  } else {
+    map.addSource(sourceId, {
+      type: "geojson",
+      data: geojson(features),
+    });
+  }
+
+  if (!map.getLayer(layerId)) {
+    map.addLayer({
+      id: layerId,
+      type: "symbol",
+      source: sourceId,
+      layout: {
+        "text-field": "🌸",
+        "text-size": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, 14,
+          14, 20,
+          19, 36
+        ],
+        "text-allow-overlap": true
+      }
+    });
+
+    map.on("click", layerId, (e) => {
+      const f = e.features[0];
+      const p = f.properties;
+      const coords = f.geometry.coordinates.slice();
+
+      const nameHtml = p._name ? `<div class="popup-name">${p._name}</div>` : "";
+      const typeHtml = p._type ? `<div class="popup-cond">Type: ${p._type}</div>` : "";
+
+      new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
+        .setLngLat(coords)
+        .setHTML(nameHtml + typeHtml)
+        .addTo(map);
+    });
+
+    map.on("mouseenter", layerId, () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
+    map.on("mouseleave", layerId, () => {
+      map.getCanvas().style.cursor = "";
+    });
+  }
 }
