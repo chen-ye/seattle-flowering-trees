@@ -134,11 +134,17 @@ export function addLayersForSource(map, sourceId, visible) {
     const sizeHtml = p._size
       ? `<div class="popup-size">Trunk Diameter: ${p._size}"</div>`
       : "";
+    const bloomHtml = p._blooming
+      ? `<div class="popup-blooming">Bloom Period: ${p._blooming}</div>`
+      : "";
+    const cherryHtml = p._is_cherry !== undefined
+      ? `<div class="popup-cherry">Flowering Cherry: ${p._is_cherry ? "Yes" : "No"}</div>`
+      : "";
     const srcHtml = `<a href="${p._base}" target="_blank" class="popup-source" style="background:${p._color}; text-decoration:none; color:white;">${p._source}</a>`;
 
     new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
       .setLngLat(coords)
-      .setHTML(nameHtml + sciHtml + condHtml + sizeHtml + srcHtml)
+      .setHTML(nameHtml + sciHtml + condHtml + sizeHtml + bloomHtml + cherryHtml + srcHtml)
       .addTo(map);
   };
 
