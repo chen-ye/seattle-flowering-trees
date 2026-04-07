@@ -1,4 +1,4 @@
-import { SOURCES } from "./constants.js";
+import { SOURCES, COLORS } from "./constants.js";
 import { fetchSourceData } from "./data.js";
 import {
   createMap,
@@ -14,8 +14,57 @@ let allFeatures = [];
 let currentFilter = "cherry";
 let currentBloomingFilters = ["early", "mid", "late"];
 
+
+
 const map = createMap("map");
 const ui = document.querySelector("app-ui");
+
+let currentHoveredSpecies = null;
+let currentHiddenSpecies = [];
+
+ui.addEventListener("species-hover-changed", (e) => {
+  currentHoveredSpecies = e.detail.color;
+  updateHoverStyles();
+});
+
+ui.addEventListener("species-filter-changed", (e) => {
+  currentHiddenSpecies = e.detail.hidden;
+  refreshMapData();
+});
+
+function updateHoverStyles() {
+  const layers = ["cherry-points", "all-points"];
+
+  layers.forEach((layerId) => {
+    if (!map.getLayer(layerId)) return;
+
+    if (currentHoveredSpecies) {
+      map.setPaintProperty(layerId, 'circle-opacity', [
+        "case",
+        ["==", ["coalesce", ["get", "_flower_color"], COLORS.single], currentHoveredSpecies],
+        0.9,
+        0.15
+      ]);
+      map.setPaintProperty(layerId, 'circle-stroke-color', [
+        "case",
+        ["==", ["coalesce", ["get", "_flower_color"], COLORS.single], currentHoveredSpecies],
+        "#00BFFF",
+        "rgba(255,255,255,0.2)"
+      ]);
+      map.setPaintProperty(layerId, 'circle-stroke-width', [
+        "case",
+        ["==", ["coalesce", ["get", "_flower_color"], COLORS.single], currentHoveredSpecies],
+        3,
+        0.8
+      ]);
+    } else {
+      map.setPaintProperty(layerId, 'circle-opacity', 0.8);
+      map.setPaintProperty(layerId, 'circle-stroke-color', "rgba(255,255,255,0.6)");
+      map.setPaintProperty(layerId, 'circle-stroke-width', 0.8);
+    }
+  });
+}
+
 
 ui.sources = SOURCES.map((s) => ({ ...s, status: "" }));
 
@@ -35,11 +84,17 @@ ui.addEventListener("blooming-filters-changed", (e) => {
 
 function refreshMapData() {
   const filteredFeatures = allFeatures.filter((f) => {
+    const color = f.properties._flower_color || COLORS.single;
+    if (currentHiddenSpecies.includes(color)) {
+      return false;
+    }
+
     if (f.properties._blooming) {
       if (!currentBloomingFilters.includes(f.properties._blooming)) {
         return false;
       }
-    } else {      if (currentBloomingFilters.length < 3) {
+    } else {
+      if (currentBloomingFilters.length < 3) {
         if (!currentBloomingFilters.includes(f.properties._blooming)) {
           return false;
         }
