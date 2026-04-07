@@ -69,33 +69,8 @@ export async function discoverFields(source) {
 
 const PAGE_SIZE = 2000;
 
-import { CURATED_LOCATIONS } from "./curated_data.js";
 
 export async function fetchSourceData(source) {
-  if (source.type === "static") {
-    let features = CURATED_LOCATIONS.map(loc => {
-      const isCherry = loc.type === "Cherry";
-      const common = isCherry ? "Flowering Cherry" : "Flowering Plum";
-      const sci = isCherry ? "Prunus spp. (cherry)" : "Prunus spp. (plum)";
-      return {
-        type: "Feature",
-        geometry: { type: "Point", coordinates: [loc.lon, loc.lat] },
-        properties: {
-          _scientific: sci,
-          _common: common,
-          _condition: "Unknown",
-          _size: null,
-          _source: source.label,
-          _base: "Curated list",
-          _color: source.color,
-          _is_cherry: isFloweringCherry(common, sci),
-          _flower_color: getFlowerColor(sci),
-          _blooming: getBloomingPeriod(sci),
-        }
-      };
-    });
-    return features;
-  }
   if (!source.base) return [];
   await discoverFields(source);
 
