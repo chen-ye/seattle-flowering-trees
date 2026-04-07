@@ -94,19 +94,19 @@ export function addLayersForSource(map, sourceId, visible) {
         10, [
           "case",
           ["!=", ["get", "_size"], null],
-          ["max", 1.5, ["/", ["get", "_size"], 15]],
+          ["min", 15, ["max", 1.5, ["/", ["get", "_size"], 15]]],
           2.5
         ],
         14, [
           "case",
           ["!=", ["get", "_size"], null],
-          ["max", 3, ["/", ["get", "_size"], 8]],
+          ["min", 30, ["max", 3, ["/", ["get", "_size"], 8]]],
           4.5
         ],
         19, [
           "case",
           ["!=", ["get", "_size"], null],
-          ["max", 6, ["/", ["get", "_size"], 3]],
+          ["min", 60, ["max", 6, ["/", ["get", "_size"], 3]]],
           8
         ]
       ],
