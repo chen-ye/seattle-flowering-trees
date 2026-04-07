@@ -506,10 +506,6 @@ export const BLOOMING_PERIODS = {
   "PRUNUS CAROLINIANA": "early",
   "PRUNUS SALICINA": "early",
   "PRUNUS BLIREANA": "early",
-  "PRUNUS SERRULATA": "early",
-  "PRUNUS ROYAL BURGUNDY": "early",
-  "PRUNUS KWANZAN": "early",
-  "PRUNUS SEKIYAMA": "early",
   "PRUNUS YEDOENSIS": "mid",
   "PRUNUS X YEDOENSIS": "mid",
   "PRUNUS ACCOLADE": "mid",
@@ -570,6 +566,10 @@ export const BLOOMING_PERIODS = {
   "PRUNUS EMARGINATA": "late",
   "PRUNUS LUSITANICA": "late",
   "PRUNUS CORNUTA": "late",
+  "PRUNUS SERRULATA": "late",
+  "PRUNUS ROYAL BURGUNDY": "late",
+  "PRUNUS KWANZAN": "late",
+  "PRUNUS SEKIYAMA": "late",
 };
 export const BLOOMING_KEYS = Object.keys(BLOOMING_PERIODS).sort(
   (a, b) => b.length - a.length,
