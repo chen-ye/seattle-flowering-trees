@@ -25,6 +25,10 @@ export function createMap(containerId) {
     zoom: initialZoom,
     minZoom: 9,
     maxZoom: 19,
+    attributionControl: {
+      compact: true,
+      customAttribution: 'Cherry Blossom by bis kim from <a href="https://thenounproject.com/browse/icons/term/cherry-blossom/" target="_blank" title="Cherry Blossom Icons">Noun Project</a> (CC BY 3.0) | Data from <a href="https://services1.arcgis.com/EYzEZbDhXZjURPbP/arcgis/rest/services/City_Trees/FeatureServer/29">City of Bellev City</a>, <a href="https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SDOT_Trees_CDL/FeatureServer/0">SDOT</a>, <a href="https://gis.maps.uw.edu/federated/rest/services/PublicData/PublicData/FeatureServer/37">UW</a>, <a href="https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Tree_View/FeatureServer/0">SPR</a>, <a href="https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/SPR_Urban_Food_Systems_Fruit_Trees_Current/FeatureServer/0">SPR Food Systems</a>, <a href="https://uwbgmaps.sefs.uw.edu/arcgis/rest/services/Master/MapServer/1">WP Arboretum</a>, <a href="https://services7.arcgis.com/9u5SMK7jcrQbBJIC/arcgis/rest/services/TreeSite/FeatureServer/0">City of Redmond</a>, <a href="https://services.arcgis.com/FLM8UAw9y5MmuVTV/arcgis/rest/services/Street_Trees/FeatureServer/0">City of Kirkland</a>, <a href="https://services7.arcgis.com/iZIPdzAfqdnP9vrA/arcgis/rest/services/TreeInventory_Public/FeatureServer/0">City of Shoreline</a>, <a href="https://services.arcgis.com/TosFUe3nXUAksqSj/arcgis/rest/services/Tree_Inventory11/FeatureServer/0">Pierce County</a>, <a href="https://www.theurbanist.org/the-urbanists-guide-to-beating-the-seattle-cherry-blossom-crowds/">Nat Henry</a>'
+    }
   });
 
   map.addControl(new maplibregl.NavigationControl(), "bottom-left");
@@ -191,7 +195,7 @@ export function addCuratedLayer(map, curatedLocations) {
   }
 
   if (!map.hasImage('flower-icon')) {
-    const img = new Image(24, 24);
+    const img = new Image(96, 96);
     img.onload = () => {
       if (!map.hasImage('flower-icon')) {
         map.addImage('flower-icon', img);
@@ -215,9 +219,9 @@ export function addCuratedLayer(map, curatedLocations) {
             "interpolate",
             ["linear"],
             ["zoom"],
-            10, 0.5,
-            14, 1,
-            19, 1.5
+            10, 0.125,
+            14, 0.25,
+            19, 0.5
           ],
           "icon-allow-overlap": true
         }

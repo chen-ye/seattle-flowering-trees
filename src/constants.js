@@ -143,7 +143,7 @@ export const SOURCES = [
       return { sci, com: sci };
     }
   },
-      {
+  {
     id: "sammamish_row",
     label: "Sammamish ROW Tree Study",
     color: "#2c3e50",
