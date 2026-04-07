@@ -81,6 +81,11 @@ class AppUI extends LitElement {
       white-space: nowrap;
     }
 
+    #logo a {
+      text-decoration: unset;
+      color: unset;
+    }
+
     .divider {
       width: 1px;
       height: 20px;
@@ -313,7 +318,7 @@ class AppUI extends LitElement {
     return html`
       <div id="top">
         <div id="panel">
-          <h1>🌸</h1>
+          <h1 id="logo"><a href="https://github.com/chen-ye/seattle-flowering-trees">🌸</a></h1>
           <div class="divider"></div>
           <div class="filter-group" role="group" aria-label="Tree filter">
             <button
