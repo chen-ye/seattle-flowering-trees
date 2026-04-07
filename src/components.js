@@ -13,6 +13,8 @@ class AppUI extends LitElement {
     totalPrunus: { type: Number },
     features: { type: Array },
     statusHidden: { type: Boolean },
+    hoveredSpeciesColor: { type: String },
+    hiddenSpeciesColors: { type: Array },
   };
 
   static styles = css`
@@ -213,6 +215,8 @@ class AppUI extends LitElement {
     this.totalPrunus = 0;
     this.features = [];
     this.statusHidden = false;
+    this.hoveredSpeciesColor = null;
+    this.hiddenSpeciesColors = [];
   }
 
   handleFilterClick(filter) {
@@ -236,6 +240,25 @@ class AppUI extends LitElement {
     this.dispatchEvent(
       new CustomEvent("blooming-filters-changed", { detail: { filters: this.currentBloomingFilters } }),
     );
+  }
+
+
+  handleSpeciesHover(color) {
+    if (this.hoveredSpeciesColor !== color) {
+      this.hoveredSpeciesColor = color;
+      this.dispatchEvent(new CustomEvent("species-hover-changed", { detail: { color } }));
+    }
+  }
+
+  handleSpeciesClick(color) {
+    let newHidden = [...this.hiddenSpeciesColors];
+    if (newHidden.includes(color)) {
+      newHidden = newHidden.filter(c => c !== color);
+    } else {
+      newHidden.push(color);
+    }
+    this.hiddenSpeciesColors = newHidden;
+    this.dispatchEvent(new CustomEvent("species-filter-changed", { detail: { hidden: this.hiddenSpeciesColors } }));
   }
 
   renderLegend() {
@@ -270,7 +293,11 @@ class AppUI extends LitElement {
               <div class="legend-section-label">Flower color</div>
               ${species.map(
                 (s) => html`
-                  <div class="legend-row">
+                  <div class="legend-row"
+                       style="cursor: pointer; ${this.hiddenSpeciesColors.includes(s.color) ? 'opacity: 0.4; text-decoration: line-through;' : ''}"
+                       @mouseenter=${() => this.handleSpeciesHover(s.color)}
+                       @mouseleave=${() => this.handleSpeciesHover(null)}
+                       @click=${() => this.handleSpeciesClick(s.color)}>
                     <div
                       class="legend-dot"
                       style="background:${s.color};border:1.5px solid rgba(0,0,0,0.12)"
