@@ -142,6 +142,24 @@ map.on("load", async () => {
     },
   );
 
+
+  map.addSource("coverage-mask", {
+    type: "geojson",
+    data: "data/mask.geojson"
+  });
+
+  map.addLayer(
+    {
+      id: "coverage-mask-layer",
+      type: "fill",
+      source: "coverage-mask",
+      paint: {
+        "fill-color": "#000000",
+        "fill-opacity": 0.2
+      }
+    }
+  );
+
   addCuratedLayer(map, CURATED_LOCATIONS);
 
 
