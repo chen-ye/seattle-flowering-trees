@@ -116,24 +116,6 @@ export const SOURCES = [
     sizeField: "DBH1",
   },
   {
-    id: "pierce",
-    label: "Pierce County",
-    color: "#f39c12",
-    base: "https://services.arcgis.com/TosFUe3nXUAksqSj/arcgis/rest/services/Tree_Inventory11/FeatureServer/0",
-        combinedField: "Species",
-    extractSpecies: (val) => {
-      if (!val) return { sci: "", com: "" };
-      const parts = val.split(" - ");
-      if (parts.length > 1) {
-        let com = parts[1].trim();
-        com = com.replace(/\(.*\)/, "").trim();
-        return { sci: parts[0].trim(), com: com };
-      }
-      return { sci: val, com: "" };
-    },
-    sizeField: "DBH__in_",
-  },
-  {
     id: "renton",
     label: "Renton Tree Sites",
     color: "#16a085",
