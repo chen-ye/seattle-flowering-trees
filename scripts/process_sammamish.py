@@ -8,6 +8,11 @@ def process_csv(csv_filepath, geojson_filepath):
     with open(csv_filepath, mode='r', encoding='utf-8-sig') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
+            # Prefilter by Prunus
+            species = row.get('Species', '')
+            if 'PRUNUS' not in species.upper():
+                continue
+
             try:
                 lat = float(row.get('Latitude', 0))
                 lng = float(row.get('Longitude', 0))

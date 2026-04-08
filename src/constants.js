@@ -136,22 +136,32 @@ export const SOURCES = [
     id: "sammamish_public",
     label: "Sammamish Public Tree Inventory",
     color: "#8e44ad",
-    sciField: "Genus",
-    commonField: "Species",
-    parseSpecies: (p) => {
-      const sci = ((p.Genus || "") + " " + (p.Species || "")).trim();
-      return { sci, com: sci };
+    url: "data/sammamish/sam-park-trees.geojson",
+    combinedField: "Species",
+    sizeField: "DBH",
+    extractSpecies: (val) => {
+      if (!val) return { sci: "", com: "" };
+      const match = val.match(/(.+?)\s*\((.+?)\)/);
+      if (match) {
+        return { com: match[1].trim(), sci: match[2].trim() };
+      }
+      return { sci: val, com: val };
     }
   },
   {
     id: "sammamish_row",
     label: "Sammamish ROW Tree Study",
     color: "#2c3e50",
-    sciField: "Genus",
-    commonField: "Species",
-    parseSpecies: (p) => {
-      const sci = ((p.Genus || "") + " " + (p.Species || "")).trim();
-      return { sci, com: sci };
+    url: "data/sammamish/sam-row-trees.geojson",
+    combinedField: "Species",
+    sizeField: "DBH",
+    extractSpecies: (val) => {
+      if (!val) return { sci: "", com: "" };
+      const match = val.match(/(.+?)\s*\((.+?)\)/);
+      if (match) {
+        return { com: match[1].trim(), sci: match[2].trim() };
+      }
+      return { sci: val, com: val };
     }
   },
 ];

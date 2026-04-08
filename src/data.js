@@ -71,67 +71,83 @@ const PAGE_SIZE = 2000;
 
 
 export async function fetchSourceData(source) {
-  if (!source.base) return [];
-  await discoverFields(source);
+  let features = [];
+
+  if (source.url) {
+    try {
+      const res = await fetch(source.url);
+      const data = await res.json();
+      features = data.features || [];
+    } catch (e) {
+      console.warn(`[${source.label}] failed to fetch geojson:`, e);
+      return [];
+    }
+  } else if (source.base) {
+    await discoverFields(source);
 
     const whereParts = [];
-  if (source.combinedField) {
-    whereParts.push(`UPPER(${source.combinedField}) LIKE 'PRUNUS%'`);
-  } else if (source.sciField) {
-    whereParts.push(`UPPER(${source.sciField}) LIKE 'PRUNUS%'`);
-  } else {
-    whereParts.push("1=1");
-  }
-  if (source.statusClause) whereParts.push(source.statusClause);
-  const where = whereParts.join(" AND ");
+    if (source.combinedField) {
+      whereParts.push(`UPPER(${source.combinedField}) LIKE 'PRUNUS%'`);
+    } else if (source.sciField) {
+      whereParts.push(`UPPER(${source.sciField}) LIKE 'PRUNUS%'`);
+    } else {
+      whereParts.push("1=1");
+    }
+    if (source.statusClause) whereParts.push(source.statusClause);
+    const where = whereParts.join(" AND ");
 
-  const outFields =
-    [source.combinedField, source.sciField, source.commonField, source.condField, source.sizeField, ...(source.extraFields || [])]
-      .filter(Boolean)
-      .join(",") || "*";
+    const outFields =
+      [source.combinedField, source.sciField, source.commonField, source.condField, source.sizeField, ...(source.extraFields || [])]
+        .filter(Boolean)
+        .join(",") || "*";
 
-  const countRes = await fetch(
-    `${source.base}/query?` +
-      new URLSearchParams({
-        where,
-        returnCountOnly: "true",
-        f: "json",
-      }),
-  );
-  const countJson = await countRes.json();
-  if (countJson.error)
-    throw new Error(`ArcGIS error: ${JSON.stringify(countJson.error)}`);
-  const count = countJson.count ?? 0;
-  if (count === 0) return [];
-
-  const offsets = Array.from(
-    { length: Math.ceil(count / PAGE_SIZE) },
-    (_, i) => i * PAGE_SIZE,
-  );
-  const pages = await Promise.all(
-    offsets.map((offset) =>
-      fetch(
-        `${source.base}/query?` +
-          new URLSearchParams({
-            where,
-            outFields,
-            outSR: "4326",
-            f: "geojson",
-            resultOffset: offset,
-            resultRecordCount: PAGE_SIZE,
-            returnGeometry: "true",
-          }),
-      )
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.error)
-            throw new Error(`ArcGIS page error: ${JSON.stringify(d.error)}`);
-          return d.features ?? [];
+    const countRes = await fetch(
+      `${source.base}/query?` +
+        new URLSearchParams({
+          where,
+          returnCountOnly: "true",
+          f: "json",
         }),
-    ),
-  );
+    );
+    const countJson = await countRes.json();
+    if (countJson.error)
+      throw new Error(`ArcGIS error: ${JSON.stringify(countJson.error)}`);
+    const count = countJson.count ?? 0;
+    if (count === 0) return [];
 
-  return pages.flat().map((f) => {
+    const offsets = Array.from(
+      { length: Math.ceil(count / PAGE_SIZE) },
+      (_, i) => i * PAGE_SIZE,
+    );
+    const pages = await Promise.all(
+      offsets.map((offset) =>
+        fetch(
+          `${source.base}/query?` +
+            new URLSearchParams({
+              where,
+              outFields,
+              outSR: "4326",
+              f: "geojson",
+              resultOffset: offset,
+              resultRecordCount: PAGE_SIZE,
+              returnGeometry: "true",
+            }),
+        )
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.error)
+              throw new Error(`ArcGIS page error: ${JSON.stringify(d.error)}`);
+            return d.features ?? [];
+          }),
+      ),
+    );
+    features = pages.flat();
+  } else {
+    return [];
+  }
+
+  const mapped = features.map((f) => {
+
     const p = f.properties || {};
 
     let sci = "";
@@ -172,4 +188,6 @@ export async function fetchSourceData(source) {
       },
     };
   });
+
+  return mapped;
 }
