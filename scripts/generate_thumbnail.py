@@ -13,6 +13,18 @@ async def main():
         # Wait for map to load and render
         await page.wait_for_timeout(5000) # Give maplibre time to fetch tiles and data
 
+        # Hide UI elements before taking screenshot
+        await page.evaluate('''() => {
+            const appUi = document.querySelector('app-ui');
+            if (appUi) appUi.style.display = 'none';
+
+            const controls = document.querySelector('.maplibregl-control-container');
+            if (controls) controls.style.display = 'none';
+        }''')
+
+        # Wait a moment for layout update
+        await page.wait_for_timeout(500)
+
         await page.screenshot(path="thumbnail.png")
         await browser.close()
 
