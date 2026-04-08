@@ -397,3 +397,50 @@ class AppUI extends LitElement {
 }
 
 customElements.define("app-ui", AppUI);
+import { LitElement, html, css } from "https://cdn.jsdelivr.net/npm/lit@3/+esm";
+import { COLOR_LABEL, formatSciLabel, COLORS } from "./constants.js";
+
+class TooltipPopup extends LitElement {
+  static properties = {
+    p: { type: Object }
+  };
+
+  static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .popup-name { font-weight: bold; font-size: 14px; margin-bottom: 2px; }
+    .popup-sci { font-style: italic; color: #555; }
+    .popup-cond, .popup-size, .popup-blooming, .popup-cherry { font-size: 12px; color: #333; }
+    .popup-source {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 500;
+      color: white;
+      text-decoration: none;
+      align-self: flex-start;
+    }
+  `;
+
+  render() {
+    if (!this.p) return html``;
+
+    return html`
+      ${this.p._common || this.p._name ? html`<div class="popup-name">${this.p._common || this.p._name}</div>` : ""}
+      ${this.p._scientific && this.p._scientific !== this.p._common ? html`<div class="popup-sci">${this.p._scientific}</div>` : ""}
+      ${this.p._condition ? html`<div class="popup-cond">Condition: ${this.p._condition}</div>` : ""}
+      ${this.p._type ? html`<div class="popup-cond">Type: ${this.p._type}</div>` : ""}
+      ${this.p._size ? html`<div class="popup-size">Trunk Diameter: ${this.p._size}"</div>` : ""}
+      ${this.p._blooming ? html`<div class="popup-blooming">Bloom Period: ${this.p._blooming}</div>` : ""}
+      ${this.p._is_cherry !== undefined ? html`<div class="popup-cherry">Flowering Cherry: ${this.p._is_cherry ? "Yes" : "No"}</div>` : ""}
+      ${this.p._source ? html`<a href="${this.p._base}" target="_blank" class="popup-source" style="background:${this.p._color}; text-decoration:none; color:white;">${this.p._source}</a>` : ""}
+    `;
+  }
+}
+customElements.define("tooltip-popup", TooltipPopup);
