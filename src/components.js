@@ -250,14 +250,23 @@ class AppUI extends LitElement {
     }
   }
 
-  handleSpeciesClick(color) {
-    let newHidden = [...this.hiddenSpeciesColors];
-    if (newHidden.includes(color)) {
-      newHidden = newHidden.filter(c => c !== color);
+  handleSpeciesClick(color, e, allColors) {
+    if (e && e.altKey) {
+      const isSolo = this.hiddenSpeciesColors.length === allColors.length - 1 && !this.hiddenSpeciesColors.includes(color);
+      if (isSolo) {
+        this.hiddenSpeciesColors = [];
+      } else {
+        this.hiddenSpeciesColors = allColors.filter(c => c !== color);
+      }
     } else {
-      newHidden.push(color);
+      let newHidden = [...this.hiddenSpeciesColors];
+      if (newHidden.includes(color)) {
+        newHidden = newHidden.filter(c => c !== color);
+      } else {
+        newHidden.push(color);
+      }
+      this.hiddenSpeciesColors = newHidden;
     }
-    this.hiddenSpeciesColors = newHidden;
     this.dispatchEvent(new CustomEvent("species-filter-changed", { detail: { hidden: this.hiddenSpeciesColors } }));
   }
 
@@ -284,6 +293,7 @@ class AppUI extends LitElement {
 
     const species = [...counts.values()]
       .sort((a, b) => a.isUnk - b.isUnk || b.count - a.count);
+    const allColors = species.map(s => s.color);
 
     return html`
       <div id="legend">
@@ -297,7 +307,7 @@ class AppUI extends LitElement {
                        style="cursor: pointer; ${this.hiddenSpeciesColors.includes(s.color) ? 'opacity: 0.4; text-decoration: line-through;' : ''}"
                        @mouseenter=${() => this.handleSpeciesHover(s.color)}
                        @mouseleave=${() => this.handleSpeciesHover(null)}
-                       @click=${() => this.handleSpeciesClick(s.color)}>
+                       @click=${(e) => this.handleSpeciesClick(s.color, e, allColors)}>
                     <div
                       class="legend-dot"
                       style="background:${s.color};border:1.5px solid rgba(0,0,0,0.12)"
