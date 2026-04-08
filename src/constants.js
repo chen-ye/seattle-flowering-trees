@@ -120,13 +120,6 @@ export const SOURCES = [
     sizeField: "DBH__in_",
   },
   {
-    id: "auburn",
-    label: "Auburn Tree Inventory",
-    color: "#f39c12",
-    sciField: "GENUS",
-    commonField: "NAME",
-  },
-  {
     id: "renton",
     label: "Renton Tree Sites",
     color: "#16a085",
