@@ -397,8 +397,6 @@ class AppUI extends LitElement {
 }
 
 customElements.define("app-ui", AppUI);
-import { LitElement, html, css } from "https://cdn.jsdelivr.net/npm/lit@3/+esm";
-import { COLOR_LABEL, formatSciLabel, COLORS } from "./constants.js";
 
 class TooltipPopup extends LitElement {
   static properties = {
