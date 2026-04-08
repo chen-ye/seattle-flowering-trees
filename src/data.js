@@ -147,11 +147,11 @@ export async function fetchSourceData(source) {
       sci = (extracted.sci || "").trim();
       com = (extracted.com || "").trim();
     } else {
-      sci = ((source.sciField && p[source.sciField]) || "").trim();
-      com = ((source.commonField && p[source.commonField]) || "").trim();
+      sci = ((source.sciField && p[source.sciField])?.toString() ?? "").trim();
+      com = ((source.commonField && p[source.commonField])?.toString() ?? "").trim();
     }
 
-    const cond = ((source.condField && p[source.condField]) || "").trim();
+    const cond = ((source.condField && p[source.condField])?.toString() ?? "").trim();
     const sizeVal = source.sizeField ? p[source.sizeField] : null;
     const size = typeof sizeVal === "number" ? sizeVal : parseFloat(sizeVal);
 

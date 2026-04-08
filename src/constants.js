@@ -119,7 +119,18 @@ export const SOURCES = [
     id: "renton",
     label: "Renton Tree Sites",
     color: "#16a085",
-    combinedField: "Tree Species",
+    base: "https://gismaps.rentonwa.gov/as03/rest/services/Operational/ParksAndRecreation/MapServer/1",
+    sciField: "GENUS",
+    commonField: "COMMONNAME",
+    extraFields: ["SPECIES"],
+    parseSpecies: (p) => {
+      const genus = (p.GENUS || "").trim();
+      const species = (p.SPECIES || "").trim();
+      const sci = (genus + " " + species).trim();
+      return { sci, com: p.COMMONNAME || "" };
+    },
+    sizeField: "TRUNKDIAM",
+    condField: "CONDITIONRATING"
   },
       {
     id: "sammamish_public",
