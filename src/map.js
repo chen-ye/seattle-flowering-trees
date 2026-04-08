@@ -121,30 +121,12 @@ export function addLayersForSource(map, sourceId, visible) {
     const f = e.features[0];
     const p = f.properties;
     const coords = f.geometry.coordinates.slice();
-    const nameHtml = p._common
-      ? `<div class="popup-name">${p._common}</div>`
-      : "";
-    const sciHtml =
-      p._scientific && p._scientific !== p._common
-        ? `<div class="popup-sci">${p._scientific}</div>`
-        : "";
-    const condHtml = p._condition
-      ? `<div class="popup-cond">Condition: ${p._condition}</div>`
-      : "";
-    const sizeHtml = p._size
-      ? `<div class="popup-size">Trunk Diameter: ${p._size}"</div>`
-      : "";
-    const bloomHtml = p._blooming
-      ? `<div class="popup-blooming">Bloom Period: ${p._blooming}</div>`
-      : "";
-    const cherryHtml = p._is_cherry !== undefined
-      ? `<div class="popup-cherry">Flowering Cherry: ${p._is_cherry ? "Yes" : "No"}</div>`
-      : "";
-    const srcHtml = `<a href="${p._base}" target="_blank" class="popup-source" style="background:${p._color}; text-decoration:none; color:white;">${p._source}</a>`;
+    const popupContent = document.createElement("tooltip-popup");
+    popupContent.p = p;
 
     new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
       .setLngLat(coords)
-      .setHTML(nameHtml + sciHtml + condHtml + sizeHtml + bloomHtml + cherryHtml + srcHtml)
+      .setDOMContent(popupContent)
       .addTo(map);
   };
 
@@ -238,12 +220,12 @@ export function addCuratedLayer(map, curatedLocations) {
         const p = f.properties;
         const coords = f.geometry.coordinates.slice();
 
-        const nameHtml = p._name ? `<div class="popup-name">${p._name}</div>` : "";
-        const typeHtml = p._type ? `<div class="popup-cond">Type: ${p._type}</div>` : "";
+        const popupContent = document.createElement("tooltip-popup");
+        popupContent.p = p;
 
         new maplibregl.Popup({ offset: 8, maxWidth: "260px" })
           .setLngLat(coords)
-          .setHTML(nameHtml + typeHtml)
+          .setDOMContent(popupContent)
           .addTo(map);
       });
 
