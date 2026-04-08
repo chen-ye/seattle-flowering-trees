@@ -155,7 +155,8 @@ map.on("load", async () => {
       source: "coverage-mask",
       paint: {
         "fill-color": "#000000",
-        "fill-opacity": 0.2
+        "fill-opacity": 0.075,
+        "fill-outline-color": "transparent"
       }
     }
   );
