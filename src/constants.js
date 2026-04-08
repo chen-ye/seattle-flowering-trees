@@ -89,7 +89,8 @@ export const SOURCES = [
     commonField: "SPECIES_COMMON",
     condField: "CONDITION",
     sizeField: "DIAMETER",
-    extraFields: ["GENUS", "SPECIES_BOTANICAL"],
+    sciField: "GENUS",
+    extraFields: ["SPECIES_BOTANICAL"],
     parseSpecies: (p) => {
       const genus = (p.GENUS || "").trim();
       const bot = (p.SPECIES_BOTANICAL || "").trim();
