@@ -81,15 +81,29 @@ export const SOURCES = [
     sciField: "GenusSpecies",
     commonField: "CommonName",
   },
-  {
+    {
     id: "kirkland",
     label: "City of Kirkland",
     color: "#e74c3c",
-    base: "https://services.arcgis.com/FLM8UAw9y5MmuVTV/arcgis/rest/services/Street_Trees/FeatureServer/0",
-    sciField: "BOTANICALN",
-    commonField: "COMMONNAME",
-    condField: "TREECONDIT",
-    sizeField: "DBH_Num",
+    base: "https://maps.kirklandwa.gov/appx/rest/services/KirklandPublic/MapServer/53",
+    commonField: "SPECIES_COMMON",
+    condField: "CONDITION",
+    sizeField: "DIAMETER",
+    extraFields: ["GENUS", "SPECIES_BOTANICAL"],
+    parseSpecies: (p) => {
+      const genus = (p.GENUS || "").trim();
+      const bot = (p.SPECIES_BOTANICAL || "").trim();
+      let sci = genus;
+      if (bot) {
+        const parts = bot.split(" ");
+        if (parts.length > 1) {
+           sci = genus + " " + parts.slice(1).join(" ");
+        } else {
+           sci = genus + " " + bot;
+        }
+      }
+      return { sci: sci.trim(), com: p.SPECIES_COMMON || "unknown" };
+    }
   },
   {
     id: "shoreline",
