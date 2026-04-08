@@ -151,7 +151,8 @@ export async function fetchSourceData(source) {
       com = ((source.commonField && p[source.commonField]) || "").trim();
     }
 
-    const cond = ((source.condField && p[source.condField]) || "").trim();
+    const condVal = source.condField ? p[source.condField] : "";
+    const cond = (condVal !== null && condVal !== undefined ? String(condVal) : "").trim();
     const sizeVal = source.sizeField ? p[source.sizeField] : null;
     const size = typeof sizeVal === "number" ? sizeVal : parseFloat(sizeVal);
 
