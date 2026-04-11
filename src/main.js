@@ -121,11 +121,10 @@ map.on("load", async () => {
   map.addSource("terrain", {
     type: "raster-dem",
     tiles: [
-      "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+      "https://tiles.mapterhorn.com/{z}/{x}/{y}.webp",
     ],
     encoding: "terrarium",
-    tileSize: 256,
-    maxzoom: 14,
+    tileSize: 512,
   });
 
   map.addLayer(
